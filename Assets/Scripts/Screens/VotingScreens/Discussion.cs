@@ -13,10 +13,6 @@ public class Discussion : MonoBehaviour
 
     private bool runOut=false;
 
-    // void Awake(){
-    //     TimerManager.Instance.StartDiscussion();
-    // }
-
     void Start(){
         FindObjectOfType<WiFiManager>().AddToInteractables(nextButton);
 

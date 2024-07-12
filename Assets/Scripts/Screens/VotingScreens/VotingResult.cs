@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,12 +37,16 @@ public class VotingResult : MonoBehaviour
         List<string> votedList = GameManager.Instance.LastVotedOutList;
         if (votedList.Count>1) {
             noneVotedFor.SetActive(true);
+            votedForCard.gameObject.SetActive(false);
+            votedForName.gameObject.SetActive(false);
             return;
         }
+
+        string votedName = GameManager.Instance.LastVotedOutName;
         foreach(KeyValuePair<string, RolesManager.CardName> kp in GameManager.Instance.lastPlayersOut){
-            if (kp.Key==votedList[0]){
+            if (kp.Key==votedName){
                 votedForCard.sprite=GameManager.Instance.roleInstances[kp.Value].GetImage();
-                votedForName.text=kp.Key;
+                votedForName.text=votedName;
                 return;
             }
         }
@@ -53,6 +58,7 @@ public class VotingResult : MonoBehaviour
     private void FillOut(){
         if (GameManager.Instance.lastPlayersOut.Count==0){
             noneOut.SetActive(true);
+            return;
         }
         int cnt=0;
         foreach(KeyValuePair<string,RolesManager.CardName> kp in GameManager.Instance.lastPlayersOut){

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f274f0a67ab3ef2429ba42b612be905c, type: 3}
+  m_Name: PegasusRole
+  m_EditorClassIdentifier: 
+  description: He chooses 1 player which can't be kicked out of the game if he gets
+    voted out, without knowing who the elders are. If he gets it right and Tartarus
+    votes the player out, it won't be displayed to Tartarus that they got it right.
+  roleName: Pegasus
+  behaviour: {fileID: 0}
+  image: {fileID: 21300000, guid: 0d25741eca881d8409988023d8de8185, type: 3}

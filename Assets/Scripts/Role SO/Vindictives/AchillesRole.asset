@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f274f0a67ab3ef2429ba42b612be905c, type: 3}
+  m_Name: AchillesRole
+  m_EditorClassIdentifier: 
+  description: If he is voted out by Tartarus, at the beginning of the next round
+    he and random elder will have their cards swapped and they will be notified about
+    it.
+  roleName: Achilles
+  behaviour: {fileID: 0}
+  image: {fileID: 21300000, guid: 67aa71292a8963042a240451aca26321, type: 3}

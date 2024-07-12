@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f274f0a67ab3ef2429ba42b612be905c, type: 3}
+  m_Name: ZeusRole
+  m_EditorClassIdentifier: 
+  description: 'At the beginning of a round, she sees other elders.
+
+    He must
+    be voted out 2 times in order to be out of the game. This is tied to card of
+    Zeus, and not the player currently in its posession.'
+  roleName: Zeus
+  behaviour: {fileID: 0}
+  image: {fileID: 21300000, guid: d64f3dd0ba73202498d8d0e6edbc97a7, type: 3}

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f274f0a67ab3ef2429ba42b612be905c, type: 3}
+  m_Name: CharonRole
+  m_EditorClassIdentifier: 
+  description: At the beginning of a round, he sees other cursed. He choses 1 Olympus
+    player to see his card at the end of moves phase. He has no voting right in voting
+    for elders.
+  roleName: Charon
+  behaviour: {fileID: 0}
+  image: {fileID: 21300000, guid: c3a5dcf4bbaec964bbd4f29a398540a5, type: 3}

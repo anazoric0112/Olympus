@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1213360181627570932
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7735143778279693335}
+  - component: {fileID: -4017429911788499898}
+  m_Layer: 0
+  m_Name: RolesManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7735143778279693335
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213360181627570932}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 38.60623, y: 347.1622, z: -2.5768683}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-4017429911788499898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213360181627570932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe0506e1bc7713449a25f3b1ca3f62b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roles: []
+  elders:
+  - {fileID: 11400000, guid: c1b3a6d78febf0a4ca37f088313bef23, type: 2}
+  - {fileID: 11400000, guid: 56359ce92dec6b04ebd4411c54d93e53, type: 2}
+  - {fileID: 11400000, guid: ef8bb49b38e15a04c81cbd8b4fca8c0e, type: 2}
+  - {fileID: 11400000, guid: 39b9eb3efcd351142af9b6e4b9a13d02, type: 2}
+  plotters:
+  - {fileID: 11400000, guid: c955cab9004826340a24f484b4855455, type: 2}
+  - {fileID: 11400000, guid: 2a510349a37e6404f8abb506f396f1d6, type: 2}
+  - {fileID: 11400000, guid: 1a41b417489a3b04f9efa50da93b033b, type: 2}
+  - {fileID: 11400000, guid: 53242df9ea8945849b2236160d08be64, type: 2}
+  - {fileID: 11400000, guid: 291455dbd6d51f540bf3432de1d82a1e, type: 2}
+  - {fileID: 11400000, guid: fbdd635388682ca4aa4de92345f3c1ad, type: 2}
+  vindictives:
+  - {fileID: 11400000, guid: d35a00cf6dcd41344aab8cc714e9d077, type: 2}
+  - {fileID: 11400000, guid: 6aaa71497e3d49940ae8fbee811f6535, type: 2}
+  - {fileID: 11400000, guid: 4024663ee57144d468ba149464054644, type: 2}
+  - {fileID: 11400000, guid: 6cb1e85d810a48947bdf66ecce51a689, type: 2}
+  - {fileID: 11400000, guid: 300b20745a038fb4fab0f8cfef897add, type: 2}
+  deceivers:
+  - {fileID: 11400000, guid: 527fd48501c12ca4b85cbc3624529495, type: 2}
+  - {fileID: 11400000, guid: 53959672d3eb6fd4cb73cc3a76346049, type: 2}
+  - {fileID: 11400000, guid: 7aaae9d7f8dbcc34282f756e61228e4d, type: 2}
+  - {fileID: 11400000, guid: ab0074544bd6feb489037dd596c4e40f, type: 2}
+  cursed:
+  - {fileID: 11400000, guid: 26006f18da28e144ab6f1aad5915ccf0, type: 2}
+  - {fileID: 11400000, guid: e48b22ca55dc0d745943770d06c2070d, type: 2}
+  - {fileID: 11400000, guid: 002494cd4add279468f10d6f38cb4e7e, type: 2}
+  - {fileID: 11400000, guid: 2ba996b157da9c24f8672d810a9d6183, type: 2}
+  - {fileID: 11400000, guid: 1559d47e7358a5a4c88fed4a3f213d57, type: 2}

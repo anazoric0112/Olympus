@@ -88,7 +88,6 @@ public class RPCsManager : NetworkBehaviour
 
     [ClientRpc(RequireOwnership = false)]
     private void GoNextClientRpc(string id){
-        Debug.Log("GoNextClientRpc called");
         GameManager.Instance.GoNextForPlayer(id);
     }
 

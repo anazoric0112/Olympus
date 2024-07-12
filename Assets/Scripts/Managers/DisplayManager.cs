@@ -88,8 +88,6 @@ public class DisplayManager : MonoBehaviour
     }
 
     static public void ToWaiting(){
-        
-        Debug.Log("Loading waiting screen");
         SceneManager.LoadScene((int)Scenes.Waiting);
     }
 
@@ -105,13 +103,10 @@ public class DisplayManager : MonoBehaviour
     }
     static public void GoToNextScene(Button b=null){
         try{
-            Debug.Log("Go next scene call start"+(b==null?" because of timeout":"from button click"));
             PressButtonAndWait(b);
             ToWaiting();
             RPCsManager.Instance.GoNextServerRpc(AuthenticationService.Instance.PlayerId);
-            Debug.Log("Go next scene call done");
         }catch(Exception e){
-            Debug.Log(e);
             UnpressButton(b);
         }
     }

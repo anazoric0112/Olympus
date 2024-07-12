@@ -29,8 +29,6 @@ public class NewRoleDisplay : MonoBehaviour
         if (role.GetCardName()==RolesManager.CardName.Nyx 
             || role.GetCardName()==RolesManager.CardName.Hemera) roleImage = nyxHemeraImage;
         else roleImage = role.GetImage();
-
-        Debug.Log("New role display "+role.GetName());
         
         image.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);
         image.GetComponentInChildren<Image>().sprite = cardBack;

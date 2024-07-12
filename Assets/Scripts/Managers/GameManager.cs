@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------------
 
     public void PlayersSwap(string p1, string p2){
-        Debug.Log("Players swap called with "+p1+" and "+p2); //###
+        // Debug.Log("Players swap called with "+p1+" and "+p2); //###
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         playerCards[p1] = c2;
@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void PlayersSwapWithFallback(string p1, string p2){
-        Debug.Log("Players swap with fallback called with "+p1+" and "+p2); //###
+        // Debug.Log("Players swap with fallback called with "+p1+" and "+p2); //###
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         fallbackRoles[p1]=c2;
@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour
     }
     
     public void TablePlayersSwap(string p1, string p2, string c){
-        Debug.Log("Table swap called with "+p1+" " +p1+ " and "+c); //###
+        // Debug.Log("Table swap called with "+p1+" " +p1+ " and "+c); //###
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         RolesManager.CardName c3=(RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),c);
@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void TakeFromTable(string c, bool totable){
-        Debug.Log("Take from table called with "+c+", totable: "+totable); //###
+        // Debug.Log("Take from table called with "+c+", totable: "+totable); //###
         RolesManager.CardName card= (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),c);
         if (totable) tableCards.Add(roleInstances[card]);
         else tableCards.Remove(roleInstances[card]);
@@ -224,7 +224,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void VoteForPlayer(string playerName, string oneVoting, bool voteForElders){
-        Debug.Log("Vote for player "+playerName+" by "+oneVoting+", elders: "+voteForElders);
+        // Debug.Log("Vote for player "+playerName+" by "+oneVoting+", elders: "+voteForElders);
         int inc = (oneVoting==hasDoubleVote && !voteForElders) ? 2:1;
 
         string playerId = FindPlayerByName(playerName);
@@ -240,12 +240,12 @@ public class GameManager : MonoBehaviour
     }
 
     public void Protect(string player){
-        Debug.Log("Protect called for "+player);
+        // Debug.Log("Protect called for "+player);
         protectedPlayer=player;
     }
     
     public void PhoenixCardChange(string player, string card){
-        Debug.Log("Phoenix card change called");
+        // Debug.Log("Phoenix card change called");
         
         RolesManager.CardName cardName = (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName), card);
         Role newrole = roleInstances[cardName];
@@ -255,11 +255,11 @@ public class GameManager : MonoBehaviour
         playerCards[player]=newrole.GetCardName();
         fallbackRoles[player]=RolesManager.CardName.Phoenix;
 
-        Debug.Log("Phoenix got his card");
+        // Debug.Log("Phoenix got his card");
     }
     
     public void SwapVotingMoves(){
-        Debug.Log("Voting rounds swap called");
+        // Debug.Log("Voting rounds swap called");
         foreach(Role r in roleInstances.Values){
             r.Behaviour.RemoveMove(forCursedVoteMI);
             r.Behaviour.RemoveMove(forEldersVoteMI);
@@ -277,9 +277,9 @@ public class GameManager : MonoBehaviour
         foreach(Role r in roleInstances.Values){
             if (r.Behaviour.Team==RolesManager.Team.Tartarus 
                 && r.GetCardName()!=RolesManager.CardName.Charon) {
-                r.Behaviour.AddMove(forCursedVoteMI);
+                r.Behaviour.AddMove(forEldersVoteMI);
             }
-            r.Behaviour.AddMove(forEldersVoteMI);
+            r.Behaviour.AddMove(forCursedVoteMI);
             r.Behaviour.AddMove(forEldersVoteResultMI);
             r.Behaviour.AddMove(forCursedVoteResultMI);
         }
@@ -295,7 +295,7 @@ public class GameManager : MonoBehaviour
     }
 
     public string GetRandomPlayerIdFromTeam(RolesManager.Team  team){
-        Debug.Log("Get random player called for team "+team.ToString());
+        // Debug.Log("Get random player called for team "+team.ToString());
         
         List<RolesManager.CardName> targetTeam = new List<RolesManager.CardName>();
         foreach(RolesManager.CardName card in playerCards.Values){
@@ -308,7 +308,7 @@ public class GameManager : MonoBehaviour
     }
 
     public string GetRandomTableCard(){
-        Debug.Log("Get random table card called");
+        // Debug.Log("Get random table card called");
         if (tableCards.Count==0) return "";
         int rng = UnityEngine.Random.Range(0,tableCards.Count);
         return tableCards[rng].GetName();
@@ -420,11 +420,9 @@ public class GameManager : MonoBehaviour
         roleInstances[card].Behaviour.Team=next;
 
         if(next==RolesManager.Team.Tartarus){
-            roleInstances[card].Behaviour.AddMove(forCursedVoteMI);
-            // roleInstances[card].Behaviour.AddMove(elderShowMI);
+            roleInstances[card].Behaviour.AddMove(forEldersVoteMI);
         } else {
-            roleInstances[card].Behaviour.RemoveMove(forCursedVoteMI);
-            // roleInstances[card].Behaviour.RemoveMove(elderShowMI);
+            roleInstances[card].Behaviour.RemoveMove(forEldersVoteMI);
         }
     }
 
@@ -439,16 +437,17 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------------
 
     private void MoveIndexForward(){
-        Debug.Log("Index move forward called");
+        // Debug.Log("Index move forward called");
         if (moveIndex==0) moveIndex=1;
         else moveIndex<<=1;
 
         while (PlayersHaveMove()==0 && moveIndex<lastVotingMove) moveIndex<<=1;
         playersToWait=PlayersHaveMove();
+        Debug.Log("Players have move: "+playersToWait);
     }
 
     private bool IsOver(){
-        Debug.Log("IsOver called");
+        // Debug.Log("IsOver called");
         return TeamWon(RolesManager.Team.Olympus)
                 || TeamWon(RolesManager.Team.Tartarus);
     }
@@ -467,7 +466,7 @@ public class GameManager : MonoBehaviour
     }
 
     private int PlayersHaveMove(){
-        Debug.Log("Players have move called");
+        // Debug.Log("Players have move called");
         int cnt=0;
         foreach(string player in playerCards.Keys){
 
@@ -475,7 +474,6 @@ public class GameManager : MonoBehaviour
             Role role = roleInstances[card];
             if (role.Behaviour.HasMove(moveIndex)) cnt++;
         }
-        Debug.Log("Players have move call ended: "+cnt);
         return cnt;
     }
 
@@ -509,7 +507,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Went to round "+ roundNumber +", playerstowait "+playersToWait);
         DisplayManager.ToGameStart();
-        Debug.Log("ToRoleDisplay called from game manager");
     }
 
     private void RoundStatsReset(){
@@ -579,15 +576,27 @@ public class GameManager : MonoBehaviour
         foreach(Role r in roleInstances.Values){
             if (r.Behaviour.Team==RolesManager.Team.Tartarus 
                 && r.GetCardName()!=RolesManager.CardName.Charon) {
-                r.Behaviour.AddMove(forCursedVoteMI);
+                r.Behaviour.AddMove(forEldersVoteMI);
             }
-            r.Behaviour.AddMove(forEldersVoteMI);
+            r.Behaviour.AddMove(forCursedVoteMI);
             r.Behaviour.AddMove(forEldersVoteResultMI);
             r.Behaviour.AddMove(forCursedVoteResultMI);
             r.Behaviour.AddMove(endChancesMI);
             r.Behaviour.AddMove(discussionMI);
         }
-        PrintMoveIndexes();
+        Debug.Log("Initial move indexes: ");
+        
+            string debugText = "";
+        foreach(Role r in roleInstances.Values){
+            int mi = r.Behaviour.MoveIndexes;
+            string s = r.GetName()+": ";
+            while (mi>0){
+                s+=(mi%2).ToString();
+                mi>>=1;
+            }
+            debugText+=s+"\n";
+        }
+        Debug.Log(debugText);
     }
 
     public void ResetGame(){
@@ -620,7 +629,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void AssignOnlyElderMove(){
-        Debug.Log("Assign only elder move called");
+        // Debug.Log("Assign only elder move called");
         RolesManager.CardName elder = RolesManager.CardName.None;
 
         foreach(RolesManager.CardName c in playerCards.Values){

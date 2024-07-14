@@ -139,7 +139,7 @@ public class InfoPeek : MonoBehaviour
 
         foreach(GameObject o in selectedCards){
             string name = o.GetComponentInChildren<TMP_Text>().text;
-            // DisplayManager.RotateCard(o.gameObject, o.GetComponentInChildren<Image>(), FindImageInRevealing(name)); ### stara linija za okretanje
+            
             DisplayManager.RotateCard(o.GetComponentInChildren<Image>().gameObject, o.GetComponentInChildren<Image>(), FindImageInRevealing(name));
 
             o.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);

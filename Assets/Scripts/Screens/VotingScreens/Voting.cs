@@ -110,6 +110,7 @@ public class Voting : MonoBehaviour
             voteButton.GetComponentInChildren<Image>().color=DisplayManager.ErrorColor;
             voteButton.GetComponentInChildren<TMP_Text>().text="You must vote";
             voteButton.interactable=true;
+            runOut=false;
             return;
         }
         RPCsManager.Instance.VoteServerRpc(GetName(selected),GamePlayer.Instance.Id,!voteForCursed);

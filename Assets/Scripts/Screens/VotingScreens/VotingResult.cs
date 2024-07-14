@@ -17,6 +17,7 @@ public class VotingResult : MonoBehaviour
     [SerializeField] GameObject noneOut;
     [SerializeField] GameObject noneVotedFor;
     [SerializeField] Image background;
+    [SerializeField] TMP_Text titleVotedFor;
 
 
     private bool runOut = false;
@@ -33,6 +34,9 @@ public class VotingResult : MonoBehaviour
             background.color = DisplayManager.LossColor;
             nextButton.GetComponentInChildren<TMP_Text>().text="Leave game";
         }
+
+        if (GameManager.Instance.forCursedVoteResultMI==GameManager.Instance.MoveIndex) titleVotedFor.text = "Voted out for Cursed:";
+        else titleVotedFor.text="Voted out for Elder:";
         
         nextButton.onClick.AddListener(()=>{
             if (ThisPlayerOut()){

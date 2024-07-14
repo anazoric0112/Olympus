@@ -15,7 +15,7 @@ public class Idle : MonoBehaviour
     private float currentTime = 2;
     private bool timerRunning = true;
     private int timerRun =1;
-    private float zprev = 0;
+    private int timesRotated = 0;
 
     void Start(){
         currentTime=maxTime;
@@ -45,9 +45,9 @@ public class Idle : MonoBehaviour
     
     private void UpdateRotation(){
         timer.transform.Rotate(0,0,stepRotation);
-        float z=timer.transform.rotation.z;
+        timesRotated++;
         
-        if (z==1.00 || z==-1.00 || z==0 || (zprev*z<0)){
+        if (timesRotated%60==0){
             timerRun++;
             if (timerRun%2==0){
                 upFill.fillOrigin=(int)Image.OriginVertical.Top;
@@ -64,7 +64,6 @@ public class Idle : MonoBehaviour
             }
             timerRunning=true;
         }
-        zprev=z;
     }
 
     private float GetFill(){

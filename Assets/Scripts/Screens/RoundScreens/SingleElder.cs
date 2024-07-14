@@ -42,10 +42,8 @@ public class SingleElder : MonoBehaviour
         cardToShow.GetComponentInChildren<Button>().interactable=false;
         RolesManager.CardName card = GameManager.Instance.playerCards[playerId];
         
-        // DisplayManager.RotateCard(cardToShow.gameObject, cardToShow.GetComponentInChildren<Image>(), GameManager.Instance.roleInstances[card].GetImage()); ### stara linija za okretanje
-                
         DisplayManager.RotateCard(cardToShow.GetComponentInChildren<Image>().gameObject, cardToShow.GetComponentInChildren<Image>(), GameManager.Instance.roleInstances[card].GetImage());
-        
+
         cardToShow.GetComponentInChildren<TMP_Text>().text = GameManager.Instance.playerNames[playerId];
         RPCsManager.Instance.SwapVotingMovesServerRpc();
     }

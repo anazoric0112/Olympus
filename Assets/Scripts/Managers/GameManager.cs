@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
         int inc = (oneVoting==hasDoubleVote && !voteForElders) ? 2:1;
 
         string playerId = FindPlayerByName(playerName);
+        whoVotedForWho[oneVoting]=playerId;
 
         if (voteForElders) {
             if (votesForElders.ContainsKey(playerId)) votesForElders[playerId]+=inc;
@@ -349,6 +350,8 @@ public class GameManager : MonoBehaviour
         if ((moveIndex&forEldersVoteResultMI)!=0 
         && PlayersHaveMove(forEldersVoteMI)==0){
             MoveIndexForward();
+            if ((moveIndex & endChancesMI) !=0) MoveIndexForward();
+            Debug.Log("Skipping vote result for elders");
         }
 
         if ((moveIndex & lastVotingMove)!=0){
@@ -386,7 +389,9 @@ public class GameManager : MonoBehaviour
             PlayerOut(lastVotedOut);
             if (voteForElders) DedicateShowingElder();
         }
-        playersToWait-=lastPlayersOut.Count; //ovo sam dodala nakon sto je radilo ###
+        // if(!ThisPlayerOut()) playersToWait-=lastPlayersOut.Count; //ovo sam dodala nakon sto je radilo ###
+        playersToWait = PlayersHaveMove(); //ne znam koja od ove dve linije je bolja evo ###endregion
+        if (ThisPlayerOut()) playersToWait++;
     }
 
     private void CountVotes(bool voteForElders){
@@ -482,6 +487,13 @@ public class GameManager : MonoBehaviour
             if (role.Behaviour.HasMove(mi)) cnt++;
         }
         return cnt;
+    }
+
+    private bool ThisPlayerOut(){
+        foreach(string player in lastPlayersOut.Keys){
+            if (player==GamePlayer.Instance.Name) return true;
+        }
+        return false;
     }
 
     private void DedicateShowingElder(){

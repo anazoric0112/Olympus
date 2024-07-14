@@ -21,10 +21,7 @@ public class EndGame : MonoBehaviour
         FindObjectOfType<WiFiManager>().AddToInteractables(newGameButton);
 
         newGameButton.onClick.AddListener(()=>{
-            FindObjectOfType<ConnectionManager>().LeaveRelay();
-            background.color=new Color32(255,255,255,255);
-            GameManager.Instance.ResetGame();
-            SceneManager.LoadScene((int)DisplayManager.Scenes.MainMenu);
+            DisplayManager.LeaveGame(background);
         });
 
         FillTitle();

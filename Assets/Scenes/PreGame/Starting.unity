@@ -1253,6 +1253,10 @@ PrefabInstance:
       propertyPath: questionBack
       value: 
       objectReference: {fileID: 21300000, guid: 632ab28ef1db32a48b6d1f1b65f9959e, type: 3}
+    - target: {fileID: 7431991044276318053, guid: 454facf9a33e3764f86b552e3d18a41c, type: 3}
+      propertyPath: rotatingStep
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7431991044276318054, guid: 454facf9a33e3764f86b552e3d18a41c, type: 3}
       propertyPath: m_RootOrder
       value: 0

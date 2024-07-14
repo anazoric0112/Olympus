@@ -47,7 +47,6 @@ public class RoleDisplay : MonoBehaviour
 
         SetButtonText(((int)initialTimer).ToString());
         nextButton.interactable=false;
-        TimerManager.Instance.StartMove();
     }
 
     void Update(){
@@ -67,14 +66,14 @@ public class RoleDisplay : MonoBehaviour
     }
 
     private void ToggleImage(){
+        bool added = false;
         if (showed){
-            image.GetComponentInChildren<Image>().sprite = cardBack;
-            instructionText.SetActive(true);
+            added = DisplayManager.RotateCard(image.gameObject, image.GetComponentInChildren<Image>(), cardBack);
         } else {
-            image.GetComponentInChildren<Image>().sprite = roleImage;
+            added = DisplayManager.RotateCard(image.gameObject, image.GetComponentInChildren<Image>(), roleImage);
             instructionText.SetActive(false);
         }
-        showed = !showed;
+        if (added) showed = !showed;
     }
 
     private void SetButtonText(string t){

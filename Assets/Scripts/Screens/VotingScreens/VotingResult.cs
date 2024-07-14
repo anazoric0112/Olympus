@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class VotingResult : MonoBehaviour
@@ -15,6 +16,7 @@ public class VotingResult : MonoBehaviour
     [SerializeField] GameObject playerCardPrefab;
     [SerializeField] GameObject noneOut;
     [SerializeField] GameObject noneVotedFor;
+    [SerializeField] Image background;
 
 
     private bool runOut = false;
@@ -25,12 +27,20 @@ public class VotingResult : MonoBehaviour
 
         FindObjectOfType<WiFiManager>().AddToInteractables(nextButton);
 
-        nextButton.onClick.AddListener(()=>{
-            DisplayManager.GoToNextScene(nextButton);
-        });
-
         FillVotedFor();
         FillOut();
+        if (ThisPlayerOut()){
+            background.color = DisplayManager.LossColor;
+            nextButton.GetComponentInChildren<TMP_Text>().text="Leave game";
+        }
+        
+        nextButton.onClick.AddListener(()=>{
+            if (ThisPlayerOut()){
+                DisplayManager.LeaveGame(background);
+            } else {
+                DisplayManager.GoToNextScene(nextButton);
+            }
+        });
     }
 
     private void FillVotedFor(){
@@ -72,6 +82,13 @@ public class VotingResult : MonoBehaviour
         }
         
         scroll.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Math.Max(500, 500*(cnt/2 + cnt%2)+100) );
+    }
+
+    private bool ThisPlayerOut(){
+        foreach(string name in GameManager.Instance.lastPlayersOut.Keys){
+            if(name==GamePlayer.Instance.Name) return true;
+        }
+        return false;
     }
 
     void Update()

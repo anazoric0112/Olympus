@@ -78,7 +78,7 @@ public class InfoPeek : MonoBehaviour
             GameObject obj = DisplayManager.InstantiateWithParent(prefab, scroll);
 
             Button b = obj.GetComponentInChildren<Button>();
-            b.GetComponentInChildren<TMP_Text>().text = card.PlayerName;
+            obj.GetComponentInChildren<TMP_Text>().text = card.PlayerName;
             b.GetComponentInChildren<Image>().sprite = DisplayManager.QuestionBack;
 
             b.onClick.AddListener(()=>{
@@ -119,7 +119,7 @@ public class InfoPeek : MonoBehaviour
     }
 
     private string GetName(GameObject o){
-        return o.GetComponentInChildren<Button>().GetComponentInChildren<TMP_Text>().text;
+        return o.GetComponentInChildren<TMP_Text>().text;
     }
 
     private Sprite FindImageInRevealing(string name){
@@ -139,7 +139,9 @@ public class InfoPeek : MonoBehaviour
 
         foreach(GameObject o in selectedCards){
             string name = o.GetComponentInChildren<TMP_Text>().text;
-            o.GetComponentInChildren<Image>().sprite = FindImageInRevealing(name);
+            // DisplayManager.RotateCard(o.gameObject, o.GetComponentInChildren<Image>(), FindImageInRevealing(name)); ### stara linija za okretanje
+            DisplayManager.RotateCard(o.GetComponentInChildren<Image>().gameObject, o.GetComponentInChildren<Image>(), FindImageInRevealing(name));
+
             o.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);
         }
     }

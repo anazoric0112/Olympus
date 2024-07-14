@@ -69,4 +69,4 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4289572351
   cardBack: {fileID: 21300000, guid: 9d8532f6640a8f8408121a8a526be1f5, type: 3}
-  questionBack: {fileID: 21300000, guid: 632ab28ef1db32a48b6d1f1b65f9959e, type: 3}
+  questionBack: {fileID: 21300000, guid: 94ed0235819b5be4ebadc17465190b0b, type: 3}

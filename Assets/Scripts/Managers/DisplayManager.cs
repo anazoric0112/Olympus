@@ -64,17 +64,78 @@ public class DisplayManager : MonoBehaviour
     static public Color32 WinColor{
         get {return FindObjectOfType<DisplayManager>().winColor;}
     }
-     static public Color32 LossColor{
+    static public Color32 LossColor{
         get {return FindObjectOfType<DisplayManager>().lossColor;}
     }
-
     static public Sprite CardBack{
         get {return FindObjectOfType<DisplayManager>().cardBack;}
     }
     static public Sprite QuestionBack{
         get {return FindObjectOfType<DisplayManager>().questionBack;}
     }
+    static private List<RotatingCard> currentRotates = new List<RotatingCard>();
+
+    class RotatingCard{
+        Sprite sprite;
+        float rotation = 180;
+        static float step=2f;
+        static int stepCnt = 5;
+        GameObject go;
+        Image img;
+
+        public RotatingCard(GameObject g, Sprite s, Image i){
+            go=g;
+            sprite=s;
+            img=i;
+        }
+
+        public void Rotate(){
+            for (int i=0;i<stepCnt;i++) {
+                go.transform.Rotate(0,step,0);
+                rotation+=step;
+                if (rotation>=270) {
+                    img.sprite=sprite;
+                    break;
+                }
+            }
+        }
+
+        public void RotateToStart(){
+            go.transform.Rotate(0,-360,0);
+            rotation=180;
+        }
+
+        public bool RotationCompleted{
+            get{return rotation>=360;}
+        }
+        public int Hash{
+            get {return go.GetHashCode();}
+        }
+    }
     
+    private void Update(){
+        try{
+            List<int> toRemove = new List<int>();
+
+            for(int i=0;i<currentRotates.Count;i++){
+                RotatingCard card = currentRotates[i];
+                card.Rotate();
+                if (card.RotationCompleted) {
+                    toRemove.Add(i);
+                    card.RotateToStart();
+                }
+            }
+
+            for(int i=toRemove.Count-1;i>=0;i--){
+                currentRotates.RemoveAt(toRemove[i]);
+            }
+        }catch (Exception e){
+            Debug.Log(e);
+            currentRotates.Clear();
+        }
+
+    }
+
     static public void BackToStart(){
         SceneManager.LoadScene((int)Scenes.MainMenu);
     }
@@ -116,5 +177,22 @@ public class DisplayManager : MonoBehaviour
         o.transform.parent = parent.transform;
         o.transform.localScale = new Vector3(1,1,1);
         return o;
+    }
+
+    static public void LeaveGame(Image background){
+        background.color=new Color32(255,255,255,255);
+        FindObjectOfType<ConnectionManager>().LeaveRelay();
+        GameManager.Instance.ResetGame();
+        SceneManager.LoadScene((int)DisplayManager.Scenes.MainMenu);
+    }
+
+    static public bool RotateCard(GameObject card, Image image, Sprite sprite){
+        foreach(RotatingCard c in currentRotates){
+            Debug.Log(c.Hash+" "+card.GetHashCode());
+            if (c.Hash==card.GetHashCode()) return false;
+        }
+        currentRotates.Add(new RotatingCard(card, sprite, image));
+        Debug.Log("Card added");
+        return true;
     }
 }

@@ -345,6 +345,12 @@ public class GameManager : MonoBehaviour
 
         if (prevmove<=forEldersVoteMI && moveIndex>forEldersVoteMI) hasDoubleVote="";
 
+        // ovaj if sam dodala zbog charon-a ### i menjala PlayersHAveMove(sad ima mi argument)
+        if ((moveIndex&forEldersVoteResultMI)!=0 
+        && PlayersHaveMove(forEldersVoteMI)==0){
+            MoveIndexForward();
+        }
+
         if ((moveIndex & lastVotingMove)!=0){
             NextRound();
         } else {
@@ -380,6 +386,7 @@ public class GameManager : MonoBehaviour
             PlayerOut(lastVotedOut);
             if (voteForElders) DedicateShowingElder();
         }
+        playersToWait-=lastPlayersOut.Count; //ovo sam dodala nakon sto je radilo ###
     }
 
     private void CountVotes(bool voteForElders){
@@ -464,14 +471,15 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private int PlayersHaveMove(){
+    private int PlayersHaveMove(int mi=-1){
         // Debug.Log("Players have move called");
+        if (mi==-1) mi=moveIndex;
         int cnt=0;
         foreach(string player in playerCards.Keys){
 
             RolesManager.CardName card = playerCards[player];
             Role role = roleInstances[card];
-            if (role.Behaviour.HasMove(moveIndex)) cnt++;
+            if (role.Behaviour.HasMove(mi)) cnt++;
         }
         return cnt;
     }

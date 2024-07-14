@@ -29,6 +29,13 @@ public class ClientJoin : MonoBehaviour
         backButton.onClick.AddListener(()=>{
             DisplayManager.BackToStart();
         });
+
+        gameCode.onValueChanged.AddListener((string val)=>{
+            gameCode.text=val;
+        });
+        playerName.onValueChanged.AddListener((string val)=>{
+            playerName.text=val;
+        });
     }
 
     void Start(){

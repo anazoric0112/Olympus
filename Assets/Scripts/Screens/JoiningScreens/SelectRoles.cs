@@ -122,6 +122,7 @@ public class SelectRoles : MonoBehaviour
 
     private List<Role> RandomShuffle(List<Role> l, int cnt=30){
         int n = l.Count;
+        if (n==0) return l;
         for (int i=0;i<cnt;i++){
             int rng1 = UnityEngine.Random.Range(0,n);
             int rng2 = UnityEngine.Random.Range(0,n);

@@ -28,6 +28,9 @@ public class HostJoin : MonoBehaviour
         backButton.onClick.AddListener(()=>{
             DisplayManager.BackToStart();
         });
+        name.onValueChanged.AddListener((string val)=>{
+            name.text=val;
+        });
     }
 
     void Start(){

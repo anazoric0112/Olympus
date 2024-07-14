@@ -2270,6 +2270,7 @@ MonoBehaviour:
   playerCardPrefab: {fileID: 1105309369777916483, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
   noneOut: {fileID: 825611613}
   noneVotedFor: {fileID: 189846927}
+  background: {fileID: 1896256549200436592}
 --- !u!1 &1774581900
 GameObject:
   m_ObjectHideFlags: 0
@@ -2555,3 +2556,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29c5093a671622343a942f260d3bf304, type: 3}
+--- !u!114 &1896256549200436592 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1896256549446264109, guid: 29c5093a671622343a942f260d3bf304, type: 3}
+  m_PrefabInstance: {fileID: 1896256549200436591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

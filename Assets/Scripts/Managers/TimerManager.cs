@@ -32,10 +32,6 @@ public class TimerManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-    void Start()
-    {
-        // if (!running) StartMove();
-    }
 
     void Update()
     {

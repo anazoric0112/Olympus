@@ -12,7 +12,6 @@ public class AchillesBehaviour : RoleBehaviour
 
     public override void DoDeathEffect(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+"DoDeathEffect called");
         if (votingFor!=RolesManager.Team.Olympus) return;
 
         if (!FindObjectOfType<ConnectionManager>().IsServer) return;

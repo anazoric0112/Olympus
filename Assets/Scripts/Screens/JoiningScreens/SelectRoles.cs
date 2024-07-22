@@ -23,6 +23,9 @@ public class SelectRoles : MonoBehaviour
     [SerializeField] TMP_Text descTitle;
     [SerializeField] Button descCloseButton;
 
+    [SerializeField] GameObject errorModal;
+    [SerializeField] TMP_Text errorText;
+
     private List<Role> selectedRoles = new List<Role>();
     private List<Toggle> checkButtons = new List<Toggle>();
     
@@ -42,12 +45,16 @@ public class SelectRoles : MonoBehaviour
             leaving = true;
             DisplayManager.PressButtonAndWait(startGame);
 
-            List<Role> assigned=AssignRoles();
             try{
-                if (!CheckSelection(assigned)) throw new Exception("Not enough cards selected");
+                CheckSelection(selectedRoles);
+                List<Role> assigned=RandomShuffle(selectedRoles);
+
                 await connectionManager.StartGame(assigned);
             } catch(Exception e){
-                Debug.Log(e);
+                errorText.text=e.Message;
+                errorModal.SetActive(true);
+
+                // Debug.Log(e);
                 DisplayManager.UnpressButton(startGame);
                 leaving = false;
                 backButton.interactable=true;
@@ -64,6 +71,9 @@ public class SelectRoles : MonoBehaviour
         });
         descCloseButton.onClick.AddListener(()=>{
             descModal.SetActive(false);
+        });
+        errorModal.GetComponentInChildren<Button>().onClick.AddListener(()=>{
+            errorModal.SetActive(false);
         });
     }
 
@@ -112,32 +122,94 @@ public class SelectRoles : MonoBehaviour
         descModal.SetActive(true);
     }
 
-    public List<Role> GetSelectedRoles(){
-        return selectedRoles;
-    }
-
-    public List<Role> AssignRoles(){
-        return RandomShuffle(selectedRoles);
-    }
-
-    private List<Role> RandomShuffle(List<Role> l, int cnt=30){
+    private List<Role> RandomShuffle(List<Role> l, int rngCnt=40){
         int n = l.Count;
         if (n==0) return l;
-        for (int i=0;i<cnt;i++){
+        
+        for (int i=0;i<rngCnt;i++){
             int rng1 = UnityEngine.Random.Range(0,n);
             int rng2 = UnityEngine.Random.Range(0,n);
-            Role t = l[rng1];
+            Role temp = l[rng1];
             l[rng1]=l[rng2];
-            l[rng2]=t;
+            l[rng2]=temp;
         }
+
+        int pCnt = connectionManager.GetPlayers().Count;
+        bool e=false, t=false;
+
+        for(int i=0;i<pCnt;i++){
+            if (l[i].Behaviour.CardClass==RolesManager.CardClass.Elder) e=true;
+            if (l[i].Behaviour.CardClass==RolesManager.CardClass.Cursed) t=true;
+        }
+
+        if (e!=t){ //samo jedan treba da se zameni
+            int rng = UnityEngine.Random.Range(0,pCnt);
+            RolesManager.CardClass toFind = e ? RolesManager.CardClass.Cursed:RolesManager.CardClass.Elder;
+
+            for(int i=pCnt;i<n;i++){
+                if (l[i].Behaviour.CardClass!=toFind) continue;
+
+                Role temp = l[i];
+                l[i]=l[rng];
+                l[rng]=temp;
+                break;
+            }
+        } else if (e==false && t==false){ //oba treba da se zamene
+            int rngt = UnityEngine.Random.Range(0,pCnt);
+            int rnge = UnityEngine.Random.Range(0,pCnt);
+
+            while (rngt==rnge) rnge = UnityEngine.Random.Range(0,pCnt);
+
+            for(int i=pCnt;i<n;i++){
+                if (l[i].Behaviour.CardClass==RolesManager.CardClass.Cursed && !t) {
+                    Role temp = l[i];
+                    l[i]=l[rngt];
+                    l[rngt]=temp;
+                    t=true;
+                }
+                if (l[i].Behaviour.CardClass==RolesManager.CardClass.Elder && !e) {
+                    Role temp = l[i];
+                    l[i]=l[rnge];
+                    l[rnge]=temp;
+                    e=true;
+                }
+                if (e && t) break;
+            }
+        }
+
         return l;
     }
 
     private bool CheckSelection(List<Role> roles){
-        if(roles.Count==0) return false;
 
-        //### ovde se na kraju dodaje full provera selekcije
-        //za sad ne treba zbog testiranja
+        int pCnt = connectionManager.GetPlayers().Count;
+        int t=0, e=0, o=0;
+        int table = roles.Count-pCnt;
+        List<RolesManager.CardName> selected = new List<RolesManager.CardName>();
+
+        if (roles.Count<pCnt) throw new Exception("You selected fewer cards than there are players in game.");
+        
+        foreach(Role r in roles){
+            selected.Add(r.GetCardName());
+            if (r.Behaviour.CardClass==RolesManager.CardClass.Cursed) t++;
+            if (r.Behaviour.CardClass==RolesManager.CardClass.Elder) e++;
+            if (r.Behaviour.Team==RolesManager.Team.Olympus) o++;
+        }
+
+        int maxCursed = (int)Math.Max(1,Math.Round(((double)o)/3));
+        
+        if (t<1 || t>maxCursed) throw new Exception("Number of Cursed selected must be between 1 and number of all others devided by 3 and rounded (both limits included).");
+        if (e!=t && e!=t-1) throw new Exception("Number of Elders selected must be equal to or 1 less than number of Cursed selected.");
+
+        if (selected.Contains(RolesManager.CardName.Dionysis) && t<3) throw new Exception("You need at least 3 Cursed selected in order to select Dionysis.");
+        if (selected.Contains(RolesManager.CardName.Dracaena) && table<2) throw new Exception("You need at least 2 table cards in order to select Dracaena.");
+        if (selected.Contains(RolesManager.CardName.Phoenix) && table<3) throw new Exception("You need at least 3 table cards in order to select Phoenix.");
+        if (selected.Contains(RolesManager.CardName.Cassandra) && table<3) throw new Exception("You need at least 3 table cards in order to select Cassandra.");
+        if (selected.Contains(RolesManager.CardName.Phoenix) 
+            && selected.Contains(RolesManager.CardName.Cassandra)
+            && table<4) throw new Exception("You need at least 4 table cards in order to select both Phoenix and Cassandra.");
+        if (selected.Contains(RolesManager.CardName.Nyx)!=selected.Contains(RolesManager.CardName.Hemera)) throw new Exception("You must select both Nyx and Hemera to select either of them.");
+        if (selected.Contains(RolesManager.CardName.Perseus)!=selected.Contains(RolesManager.CardName.Medusa)) throw new Exception("You must select both Perseus and Medusa to select either of them.");
 
         return true;
     }

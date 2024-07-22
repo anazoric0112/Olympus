@@ -15,7 +15,6 @@ public class AphroditeBehaviour : RoleBehaviour
 
     public override void ToNextScene(int moveIndex){
         if (!HasMove(moveIndex)) return;
-        Debug.Log(Name.ToString()+" ToNextScene called with index"+indexToInt(moveIndex));
 
         if (moveIndex==1<<2){
             FillRevealing();
@@ -32,7 +31,6 @@ public class AphroditeBehaviour : RoleBehaviour
         AddToRevealing(RolesManager.CardName.Dionysis);
     }
     public override void DoDeathEffect(RolesManager.Team votingFor){
-        Debug.Log(Name.ToString()+"DoDeathEffect called");
         lives-=1;
     }
 }

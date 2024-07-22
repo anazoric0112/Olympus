@@ -14,20 +14,32 @@ public class GameLobby : MonoBehaviour
     [SerializeField] Button nextButton;
     [SerializeField] Button backButton;
     [SerializeField] TMP_Text joinCodeText;
+
+    [SerializeField] GameObject errorModal;
+    [SerializeField] TMP_Text errorText;
+
     private ConnectionManager connectionManager;
     private bool leaving = false;
 
     void Awake(){
         connectionManager = FindObjectOfType<ConnectionManager>();
+        
 
         nextButton.onClick.AddListener(async ()=>{
             leaving = true;
             backButton.interactable=false;
             DisplayManager.PressButtonAndWait(nextButton);
             try{
+                int pCnt = connectionManager.GetPlayers().Count;
+                // if (pCnt<5) throw new Exception("You need at least 5 players to play."); ### uncomment for final version
+                if (pCnt>20) throw  new Exception("You exceeded maximum number of players (20).");
+
                 await connectionManager.MoveToSelect();
             } catch(Exception e){
-                Debug.Log(e);
+                errorModal.SetActive(true);
+                errorText.text=e.Message;
+
+                // Debug.Log(e);
                 DisplayManager.UnpressButton(nextButton);
                 leaving=false;
                 backButton.interactable=true;
@@ -41,6 +53,9 @@ public class GameLobby : MonoBehaviour
             DisplayManager.UnpressButton(backButton);
             nextButton.interactable=true;
             leaving = false;
+        });
+        errorModal.GetComponentInChildren<Button>().onClick.AddListener(()=>{
+            errorModal.SetActive(false);
         });
     }
 

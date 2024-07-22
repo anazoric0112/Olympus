@@ -1563,6 +1563,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6736660896671775273, guid: 8364455b15437f048809c742d4a7764b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9d8532f6640a8f8408121a8a526be1f5, type: 3}
+    - target: {fileID: 6736660896671775273, guid: 8364455b15437f048809c742d4a7764b, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7003650718077042179, guid: 8364455b15437f048809c742d4a7764b, type: 3}
       propertyPath: m_Name
       value: RoleImage

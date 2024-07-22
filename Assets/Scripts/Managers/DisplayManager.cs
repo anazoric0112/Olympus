@@ -188,11 +188,9 @@ public class DisplayManager : MonoBehaviour
 
     static public bool RotateCard(GameObject card, Image image, Sprite sprite){
         foreach(RotatingCard c in currentRotates){
-            Debug.Log(c.Hash+" "+card.GetHashCode());
             if (c.Hash==card.GetHashCode()) return false;
         }
         currentRotates.Add(new RotatingCard(card, sprite, image));
-        Debug.Log("Card added");
         return true;
     }
 }

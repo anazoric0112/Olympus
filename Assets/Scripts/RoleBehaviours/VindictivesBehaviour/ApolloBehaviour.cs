@@ -12,7 +12,6 @@ public class ApolloBehaviour : RoleBehaviour
 
     public override void DoVotedForPassive(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+"DoVotedForPassive called");
         if (votingFor!=RolesManager.Team.Tartarus) return;
         
         GameManager.Instance.SetOnlyVoteCounts(GameManager.Instance.FindPlayerByCard(Name));

@@ -15,7 +15,6 @@ public class ArtemisBehaviour : RoleBehaviour
 
     public override void ToNextScene(int moveIndex){
         if (!HasMove(moveIndex)) return;
-        Debug.Log(Name.ToString()+" ToNextScene called with index"+indexToInt(moveIndex));
 
         if (moveIndex==1<<2){
             cardsToReveal.Clear();
@@ -37,7 +36,6 @@ public class ArtemisBehaviour : RoleBehaviour
     
     public override void DoVotedForPassive(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+"DoVotedForPassive called");
         if (votingFor!=RolesManager.Team.Tartarus) return;
         
         string playerId = GameManager.Instance.FindPlayerByCard(Name);

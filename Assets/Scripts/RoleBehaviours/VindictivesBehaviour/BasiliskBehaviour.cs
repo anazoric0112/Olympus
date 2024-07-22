@@ -13,7 +13,6 @@ public class BasiliskBehaviour : RoleBehaviour
 
     public override void DoDeathEffect(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+"DoDeathEffect called");
         if (votingFor!=RolesManager.Team.Olympus) return;
 
         List<string> toKill=new List<string>();

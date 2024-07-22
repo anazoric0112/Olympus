@@ -18,7 +18,6 @@ public class PhoenixBehaviour : RoleBehaviour
 
     public override void ToNextScene(int moveIndex){
         if (!HasMove(moveIndex)) return;
-        Debug.Log(Name.ToString()+" ToNextScene called with index"+indexToInt(moveIndex));
 
         if (moveIndex==1<<1){
             string card = GameManager.Instance.GetRandomTableCard();

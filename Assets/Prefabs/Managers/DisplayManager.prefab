@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   errorColor:
     serializedVersion: 2
-    rgba: 2130706538
+    rgba: 2215444545
   inputColor:
     serializedVersion: 2
     rgba: 1157627904

@@ -12,7 +12,6 @@ public class OrpheusBehaviour : RoleBehaviour
 
     public override void DoDeathEffect(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+" DoDeathEffect called");
         if (votingFor==Team){
             GameManager.Instance.ChangeTeam(Name);
         }

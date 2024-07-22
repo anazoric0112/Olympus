@@ -12,7 +12,6 @@ public class PerseusBehaviour : RoleBehaviour
 
     public override void DoDeathEffect(RolesManager.Team votingFor)
     {
-        Debug.Log(Name.ToString()+"DoDeathEffect called");
         if (votingFor!=RolesManager.Team.Olympus) return;
 
         GameManager.Instance.PlayerOut(GameManager.Instance.FindPlayerByCard(RolesManager.CardName.Medusa));

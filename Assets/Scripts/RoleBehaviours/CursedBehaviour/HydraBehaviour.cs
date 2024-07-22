@@ -12,7 +12,6 @@ public class HydraBehaviour : RoleBehaviour
     }
     
     public override void DoDeathEffect(RolesManager.Team votingFor){
-        Debug.Log(Name.ToString()+"DoDeathEffect called");
         if(votingFor==RolesManager.Team.Tartarus) lives-=1;
     }
 }

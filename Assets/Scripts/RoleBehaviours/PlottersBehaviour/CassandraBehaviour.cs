@@ -18,7 +18,6 @@ public class CassandraBehaviour : RoleBehaviour
     
     public override void ToNextScene(int moveIndex){
         if (!HasMove(moveIndex)) return;
-        Debug.Log(Name.ToString()+" ToNextScene called with index"+indexToInt(moveIndex));
 
         if (moveIndex==1<<8){
             FillRevealing();

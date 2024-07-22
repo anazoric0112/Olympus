@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------------
 
     public void PlayersSwap(string p1, string p2){
-        // Debug.Log("Players swap called with "+p1+" and "+p2); //###
+        Debug.Log("Players swap called with "+p1+" and "+p2);
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         playerCards[p1] = c2;
@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void PlayersSwapWithFallback(string p1, string p2){
-        // Debug.Log("Players swap with fallback called with "+p1+" and "+p2); //###
+        Debug.Log("Players swap with fallback called with "+p1+" and "+p2);
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         fallbackRoles[p1]=c2;
@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour
     }
     
     public void TablePlayersSwap(string p1, string p2, string c){
-        // Debug.Log("Table swap called with "+p1+" " +p1+ " and "+c); //###
+        Debug.Log("Table swap called with "+p1+" " +p1+ " and "+c);
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
         RolesManager.CardName c3=(RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),c);
@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void TakeFromTable(string c, bool totable){
-        // Debug.Log("Take from table called with "+c+", totable: "+totable); //###
+        Debug.Log("Take from table called with "+c+", totable: "+totable);
         RolesManager.CardName card= (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),c);
         if (totable) tableCards.Add(roleInstances[card]);
         else tableCards.Remove(roleInstances[card]);
@@ -215,14 +215,10 @@ public class GameManager : MonoBehaviour
         playersWentNext++;
         Debug.Log("Go next for player "+id+": "+playersWentNext+" / "+playersToWait);
 
-        if (playersWentNext==playersToWait) {
-            NextMove();
-            Debug.Log("Loaded move "+Math.Log10(moveIndex*2)/Math.Log10(2));
-        }
+        if (playersWentNext==playersToWait) NextMove();
     }
 
     public void VoteForPlayer(string playerName, string oneVoting, bool voteForElders){
-        // Debug.Log("Vote for player "+playerName+" by "+oneVoting+", elders: "+voteForElders);
         int inc = (oneVoting==hasDoubleVote && !voteForElders) ? 2:1;
 
         string playerId = FindPlayerByName(playerName);
@@ -239,13 +235,10 @@ public class GameManager : MonoBehaviour
     }
 
     public void Protect(string player){
-        // Debug.Log("Protect called for "+player);
         protectedPlayer=player;
     }
     
     public void PhoenixCardChange(string player, string card){
-        // Debug.Log("Phoenix card change called");
-        
         RolesManager.CardName cardName = (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName), card);
         Role newrole = roleInstances[cardName];
 
@@ -253,12 +246,9 @@ public class GameManager : MonoBehaviour
 
         playerCards[player]=newrole.GetCardName();
         fallbackRoles[player]=RolesManager.CardName.Phoenix;
-
-        // Debug.Log("Phoenix got his card");
     }
     
     public void SwapVotingMoves(){
-        // Debug.Log("Voting rounds swap called");
         foreach(Role r in roleInstances.Values){
             r.Behaviour.RemoveMove(forCursedVoteMI);
             r.Behaviour.RemoveMove(forEldersVoteMI);
@@ -294,7 +284,6 @@ public class GameManager : MonoBehaviour
     }
 
     public string GetRandomPlayerIdFromTeam(RolesManager.Team  team){
-        // Debug.Log("Get random player called for team "+team.ToString());
         
         List<RolesManager.CardName> targetTeam = new List<RolesManager.CardName>();
         foreach(RolesManager.CardName card in playerCards.Values){
@@ -307,7 +296,6 @@ public class GameManager : MonoBehaviour
     }
 
     public string GetRandomTableCard(){
-        // Debug.Log("Get random table card called");
         if (tableCards.Count==0) return "";
         int rng = UnityEngine.Random.Range(0,tableCards.Count);
         return tableCards[rng].GetName();
@@ -346,7 +334,6 @@ public class GameManager : MonoBehaviour
 
         if (prevmove<=forEldersVoteMI && moveIndex>forEldersVoteMI) hasDoubleVote="";
 
-        // ovaj if sam dodala zbog charon-a ### i menjala PlayersHAveMove(sad ima mi argument)
         if ((moveIndex&forEldersVoteResultMI)!=0 
         && PlayersHaveMove(forEldersVoteMI)==0){
             MoveIndexForward();
@@ -357,25 +344,23 @@ public class GameManager : MonoBehaviour
         if ((moveIndex & lastVotingMove)!=0){
             NextRound();
         } else {
-            GamePlayer.Instance.Role.Behaviour.ToNextScene(moveIndex);
+            RoleBehaviour rb = roleInstances[playerCards[GamePlayer.Instance.Id]].Behaviour;
+            rb.ToNextScene(moveIndex);
+
             Debug.Log("State after player went to next move: ");
             PrintGameState();
         }
     }
 
-    //to be tested VERY MUCH
     public void ProcessVotes(bool voteForElders){
-        Debug.Log("Process votes called");
         lastPlayersOut.Clear();
         CountVotes(voteForElders);
 
         if (lastVotedOut=="") return;
         
-        //treba nesto da se pozove prvo efekat ako je izglasan
         RolesManager.Team votingForTeam = voteForElders? RolesManager.Team.Olympus : RolesManager.Team.Tartarus;
         roleInstances[playerCards[lastVotedOut]].Behaviour.DoVotedForPassive(votingForTeam);
         
-        //onda treba da se odradi death effect
         roleInstances[playerCards[lastVotedOut]].Behaviour.DoDeathEffect(votingForTeam);
         if (lastVotedOut==protectedPlayer) {
             roleInstances[playerCards[lastVotedOut]].Behaviour.ProtectFromDying();
@@ -389,9 +374,9 @@ public class GameManager : MonoBehaviour
             PlayerOut(lastVotedOut);
             if (voteForElders) DedicateShowingElder();
         }
-        // if(!ThisPlayerOut()) playersToWait-=lastPlayersOut.Count; //ovo sam dodala nakon sto je radilo ###
-        playersToWait = PlayersHaveMove(); //ne znam koja od ove dve linije je bolja evo ###endregion
-        if (ThisPlayerOut()) playersToWait++;
+        
+        playersToWait = PlayersHaveMove(); //ovo je zbog ljudi koji ispadnu pa ne treba da se cekaju
+        if (ThisPlayerOut()) playersToWait++; //ne znam radi li 
     }
 
     private void CountVotes(bool voteForElders){
@@ -414,7 +399,6 @@ public class GameManager : MonoBehaviour
     }
 
     public void PlayerOut(string player){
-        Debug.Log("Player out called for "+player);
         lastPlayersOut[playerNames[player]]=playerCards[player];
 
         playersOut.Add(player);
@@ -437,28 +421,57 @@ public class GameManager : MonoBehaviour
     }
 
     public void SetOnlyVoteCounts(string player){
-        Debug.Log("Set only vote counds called for "+playerNames[player]);
+        Debug.Log("Set only vote counts called for "+playerNames[player]);
         lastVotedOut=whoVotedForWho[player];
         lastVotedOutName=playerNames[lastVotedOut];
+
+        foreach(string p in whoVotedForWho.Keys){
+            whoVotedForWho[p]=lastVotedOut;
+        }
     }
 
+    public void ResetGame(){
+        tableCards.Clear();
+        playerNames.Clear();
+        playerCards.Clear();
+        playersOut.Clear();
+        roleInstances.Clear();
+        playersIdsList.Clear();
+        votesForCursed.Clear();
+        votesForElders.Clear();
+        lastPlayersOut.Clear();
+        whoVotedForWho.Clear();
+        fallbackRoles.Clear();
+        lastVotedOutList.Clear();
+
+        roundNumber=1;
+        moveIndex=0;
+        playersWentNext=0;
+        playersToWait=0;
+        protectedPlayer="";
+        hasDoubleVote="";
+        dedicatedNextElderId="";
+        lastVotedOut="";
+
+        onlyElder=null;
+
+        RestoreVotingMoves(); //### pomeri ovo gore...
+        InstantiateRoleBehaviours();
+    }
 
     //------------------------------------------------------------
     //Helper private methods
     //------------------------------------------------------------
 
     private void MoveIndexForward(){
-        // Debug.Log("Index move forward called");
         if (moveIndex==0) moveIndex=1;
         else moveIndex<<=1;
 
         while (PlayersHaveMove()==0 && moveIndex<lastVotingMove) moveIndex<<=1;
         playersToWait=PlayersHaveMove();
-        Debug.Log("Players have move: "+playersToWait);
     }
 
     private bool IsOver(){
-        // Debug.Log("IsOver called");
         return TeamWon(RolesManager.Team.Olympus)
                 || TeamWon(RolesManager.Team.Tartarus);
     }
@@ -477,7 +490,6 @@ public class GameManager : MonoBehaviour
     }
 
     private int PlayersHaveMove(int mi=-1){
-        // Debug.Log("Players have move called");
         if (mi==-1) mi=moveIndex;
         int cnt=0;
         foreach(string player in playerCards.Keys){
@@ -516,7 +528,6 @@ public class GameManager : MonoBehaviour
     }
     
     private void NextRound(){
-        Debug.Log("Next round called");
         RoundStatsReset();
         FallBackRolesFix();
 
@@ -606,35 +617,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ResetGame(){
-        tableCards.Clear();
-        playerNames.Clear();
-        playerCards.Clear();
-        playersOut.Clear();
-        roleInstances.Clear();
-        playersIdsList.Clear();
-        votesForCursed.Clear();
-        votesForElders.Clear();
-        lastPlayersOut.Clear();
-        whoVotedForWho.Clear();
-        fallbackRoles.Clear();
-        lastVotedOutList.Clear();
-
-        roundNumber=1;
-        moveIndex=0;
-        playersWentNext=0;
-        playersToWait=0;
-        protectedPlayer="";
-        hasDoubleVote="";
-        dedicatedNextElderId="";
-        lastVotedOut="";
-
-        onlyElder=null;
-
-        InstantiateRoleBehaviours();
-        RestoreVotingMoves();
-    }
-
     private void AssignOnlyElderMove(){
         RolesManager.CardName elder = RolesManager.CardName.None;
 
@@ -647,7 +629,6 @@ public class GameManager : MonoBehaviour
         if (elder == RolesManager.CardName.None) return;
         roleInstances[elder].Behaviour.AddMove(singleElderPreGameMI);
         onlyElder = roleInstances[elder];
-        Debug.Log("Only elder move assigned");
     }
 
     private void RestoreVotingMoves(){

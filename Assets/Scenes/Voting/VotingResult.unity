@@ -2048,9 +2048,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: VotedFor
       objectReference: {fileID: 0}
+    - target: {fileID: 1105309369777916483, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_text
-      value: Player name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_fontSize
@@ -2059,7 +2063,7 @@ PrefabInstance:
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 4e9ee62d453888f4eacd537f03207983, type: 2}
+      objectReference: {fileID: 11400000, guid: d2e679ad31f34d84c9f3e3fde14aa223, type: 2}
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_fontSizeBase
       value: 70
@@ -2067,7 +2071,7 @@ PrefabInstance:
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 7994759019856580751, guid: 4e9ee62d453888f4eacd537f03207983, type: 2}
+      objectReference: {fileID: 6265533923963155010, guid: d2e679ad31f34d84c9f3e3fde14aa223, type: 2}
     - target: {fileID: 1105309370061096174, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -2075,6 +2079,10 @@ PrefabInstance:
     - target: {fileID: 1105309370061096175, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 43.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105309371761607173, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}
+      propertyPath: m_Sprite
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb5fe745903934340abeb3ed5cd0a266, type: 3}

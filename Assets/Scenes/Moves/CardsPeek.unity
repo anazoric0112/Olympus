@@ -598,6 +598,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: InstructionText
       objectReference: {fileID: 0}
+    - target: {fileID: 5437067738613852118, guid: 7362048bfa724a84ea334e0933f9425e, type: 3}
+      propertyPath: m_text
+      value: 'instruction text instruction text instruction text instruction text
+        instruction text instruction text instruction text instruction text '
+      objectReference: {fileID: 0}
     - target: {fileID: 5437067738613852119, guid: 7362048bfa724a84ea334e0933f9425e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -711,6 +716,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DisplayManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7431991044276318053, guid: 454facf9a33e3764f86b552e3d18a41c, type: 3}
+      propertyPath: questionBackNonClickable
+      value: 
+      objectReference: {fileID: 21300000, guid: c7452f6fe82e902408794d626471f99a, type: 3}
     - target: {fileID: 7431991044276318054, guid: 454facf9a33e3764f86b552e3d18a41c, type: 3}
       propertyPath: m_RootOrder
       value: 0

@@ -12,8 +12,10 @@ public class ApolloBehaviour : RoleBehaviour
 
     public override void DoVotedForPassive(RolesManager.Team votingFor)
     {
+        doneDeathEffect=false;
         if (votingFor!=RolesManager.Team.Tartarus) return;
         
+        doneDeathEffect=true;
         GameManager.Instance.SetOnlyVoteCounts(GameManager.Instance.FindPlayerByCard(Name));
     }
 }

@@ -15,6 +15,13 @@ public class RoleDisplay : MonoBehaviour
     [SerializeField] GameObject instructionText;
     [SerializeField] Sprite nyxHemeraImage;
 
+    [SerializeField] Button descOpenButton;
+    [SerializeField] GameObject descModal;
+    [SerializeField] TMP_Text descText;
+    [SerializeField] TMP_Text descTitle;
+    [SerializeField] Button descCloseButton;
+
+
     private bool showed = false;
     private bool runOut = false;
     private bool initialOver = false;
@@ -23,16 +30,23 @@ public class RoleDisplay : MonoBehaviour
 
     void Start()
     {
-        TimerManager.Instance.StartMove();
+        TimerManager.Instance.StartRoleDisplay();
         TimerManager.Instance.RestoreSavedTime();
         
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(nextButton);
         
         Role role = GamePlayer.Instance.Role;
+        string roleTitle = role.GetName();
+        string roleDesc = role.GetDescription();
+        roleImage = role.GetImage();
+
         if (role.GetCardName()==RolesManager.CardName.Nyx 
-            || role.GetCardName()==RolesManager.CardName.Hemera) roleImage = nyxHemeraImage;
-        else roleImage = role.GetImage();
+            || role.GetCardName()==RolesManager.CardName.Hemera) {
+                roleImage = nyxHemeraImage;
+                roleTitle="Nyx & Hemera";
+                roleDesc = "You don't know whether you are Nyx or Hemera. At the beginning of a round, they both see info that someone is Tartarus member, but Hemera's info is true and Nyx's is false.";
+        }
         
         image.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);
         image.GetComponentInChildren<Image>().sprite = cardBack;
@@ -43,6 +57,16 @@ public class RoleDisplay : MonoBehaviour
 
         toggleImageButton.onClick.AddListener(()=>{
             ToggleImage();
+        });
+
+        descText.text = roleDesc;
+        descTitle.text = roleTitle;
+
+        descOpenButton.onClick.AddListener(()=>{
+            descModal.SetActive(true);
+        });
+        descCloseButton.onClick.AddListener(()=>{
+            descModal.SetActive(false);
         });
 
         SetButtonText(((int)initialTimer).ToString());

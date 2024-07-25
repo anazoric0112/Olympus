@@ -18,6 +18,7 @@ public class RoleBehaviour : MonoBehaviour
     protected int moveIndexes=0;
     protected string moveInstructionText="";
     protected bool revealMyCard = false;
+    protected bool doneDeathEffect = false;
 
     public class RevealingCard{
         Sprite image;
@@ -66,6 +67,9 @@ public class RoleBehaviour : MonoBehaviour
     public bool IsDead{
         get{return lives<=0;}
     }
+    public bool DoneDeathEffect{
+        get {return doneDeathEffect;}
+    }
     public virtual bool HasMove(int moveIndex){
         return (moveIndex & moveIndexes) != 0;
     }
@@ -78,7 +82,7 @@ public class RoleBehaviour : MonoBehaviour
         string name = GameManager.Instance.playerNames[player];
 
         if (revealCard) cardsToReveal.Add(new RevealingCard(img, name, !revealCard));
-        else cardsToReveal.Add(new RevealingCard(DisplayManager.QuestionBack, name, !revealCard));
+        else cardsToReveal.Add(new RevealingCard(DisplayManager.QuestionBackNonClickable, name, !revealCard));
     }
 
     public virtual void ToNextScene(int moveIndex){
@@ -158,8 +162,8 @@ public class RoleBehaviour : MonoBehaviour
     public void RemoveMove(int mi){
         moveIndexes &= ~mi;
     }
-    
-    protected double indexToInt(int m){
-        return Math.Log(m)/Math.Log(2);
+
+    public void ClearDeathEffect(){
+        doneDeathEffect=false;
     }
 }

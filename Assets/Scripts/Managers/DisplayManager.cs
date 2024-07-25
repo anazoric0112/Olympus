@@ -43,6 +43,7 @@ public class DisplayManager : MonoBehaviour
 
     [SerializeField] public Sprite cardBack;
     [SerializeField] public Sprite questionBack;
+    [SerializeField] public Sprite questionBackNonClickable;
     static public Color32 ErrorColor{
         get {return FindObjectOfType<DisplayManager>().errorColor;}
     }
@@ -72,6 +73,9 @@ public class DisplayManager : MonoBehaviour
     }
     static public Sprite QuestionBack{
         get {return FindObjectOfType<DisplayManager>().questionBack;}
+    }
+    static public Sprite QuestionBackNonClickable{
+        get {return FindObjectOfType<DisplayManager>().questionBackNonClickable;}
     }
     static private List<RotatingCard> currentRotates = new List<RotatingCard>();
 

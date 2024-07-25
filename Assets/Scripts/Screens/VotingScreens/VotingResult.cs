@@ -30,7 +30,7 @@ public class VotingResult : MonoBehaviour
 
         FillVotedFor();
         FillOut();
-        if (ThisPlayerOut()){
+        if (ThisPlayerIsOut()){
             background.color = DisplayManager.LossColor;
             nextButton.GetComponentInChildren<TMP_Text>().text="Leave game";
         }
@@ -39,7 +39,7 @@ public class VotingResult : MonoBehaviour
         else titleVotedFor.text="Voted out for Elder:";
         
         nextButton.onClick.AddListener(()=>{
-            if (ThisPlayerOut()){
+            if (ThisPlayerIsOut()){
                 DisplayManager.LeaveGame(background);
             } else {
                 DisplayManager.GoToNextScene(nextButton);
@@ -67,6 +67,8 @@ public class VotingResult : MonoBehaviour
         RolesManager.CardName card = GameManager.Instance.playerCards[votedList[0]];
         votedForCard.sprite=GameManager.Instance.roleInstances[card].GetImage();
         votedForName.text=GameManager.Instance.playerNames[votedList[0]];
+
+        if (!ShowCard(card,PlayerIsOut(votedForName.text))) votedForCard.sprite=DisplayManager.QuestionBackNonClickable;
     }
 
     private void FillOut(){
@@ -88,12 +90,19 @@ public class VotingResult : MonoBehaviour
         scroll.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Math.Max(500, 500*(cnt/2 + cnt%2)+100) );
     }
 
-    private bool ThisPlayerOut(){
+    private bool ThisPlayerIsOut(){
         foreach(string name in GameManager.Instance.lastPlayersOut.Keys){
             if(name==GamePlayer.Instance.Name) return true;
         }
         return false;
     }
+    private bool PlayerIsOut(string playerName){
+        foreach(string name in GameManager.Instance.lastPlayersOut.Keys){
+            if(name==playerName) return true;
+        }
+        return false;
+    }
+
 
     void Update()
     {
@@ -101,5 +110,80 @@ public class VotingResult : MonoBehaviour
             runOut=true;
             DisplayManager.GoToNextScene();
         }
+    }
+
+    private bool ShowCard(RolesManager.CardName card, bool isOut){
+        RolesManager.Team myTeam = GamePlayer.Instance.Role.Behaviour.Team;
+        RolesManager.Team votingForTeam = GameManager.Instance.forCursedVoteResultMI==GameManager.Instance.MoveIndex ? RolesManager.Team.Tartarus : RolesManager.Team.Olympus;
+
+
+        if (GetNeverShowCards().Contains(card)) return false;
+        if (GetShowIfOut().Contains(card)) {
+            if (isOut) return true;
+            else return false;
+        }
+        if (GetShowIfVotingForElder().Contains(card)){
+            if (votingForTeam==RolesManager.Team.Olympus) return true;
+            else return false;
+        }
+        if (GetShowIfDoneEffect(card)) {
+            if (card==RolesManager.CardName.Orpheus && myTeam==votingForTeam) return false;
+            else return true;
+        }
+
+        return false;
+    }
+
+    private List<RolesManager.CardName> GetShowIfVotingForElder(){
+        List<RolesManager.CardName> showInVFElder = new List<RolesManager.CardName>();
+
+        //ovi isto mogu da se sutnu u death effect ako im se doda
+        showInVFElder.Add(RolesManager.CardName.Perseus);
+        showInVFElder.Add(RolesManager.CardName.Basilisk);
+
+        return showInVFElder;
+    }
+
+    private bool GetShowIfDoneEffect(RolesManager.CardName card){
+        if (card!=RolesManager.CardName.Artemis &&
+            card!=RolesManager.CardName.Apollo &&
+            card!=RolesManager.CardName.Orpheus) return false;
+
+        RoleBehaviour rb = GameManager.Instance.roleInstances[card].Behaviour;
+        if (rb.DoneDeathEffect){
+            GameManager.Instance.roleInstances[card].Behaviour.ClearDeathEffect();
+            return true;
+        }
+
+        return false;
+    }
+
+    private List<RolesManager.CardName> GetNeverShowCards(){
+        List<RolesManager.CardName> neverShow = new List<RolesManager.CardName>();
+        neverShow.Add(RolesManager.CardName.Cassandra);
+        neverShow.Add(RolesManager.CardName.Pegasus);
+        neverShow.Add(RolesManager.CardName.Phoenix);
+        neverShow.Add(RolesManager.CardName.Dracaena);
+        neverShow.Add(RolesManager.CardName.Dryad);
+        neverShow.Add(RolesManager.CardName.Pandora);
+        neverShow.Add(RolesManager.CardName.Nyx);
+        neverShow.Add(RolesManager.CardName.Hemera);
+        neverShow.Add(RolesManager.CardName.Achilles);
+        return neverShow;
+    }
+
+    private List<RolesManager.CardName> GetShowIfOut(){
+        List<RolesManager.CardName> showIfOut = new List<RolesManager.CardName>();
+        showIfOut.Add(RolesManager.CardName.Athena);
+        showIfOut.Add(RolesManager.CardName.Zeus);
+        showIfOut.Add(RolesManager.CardName.Aphrodite);
+        showIfOut.Add(RolesManager.CardName.Dionysis);
+        showIfOut.Add(RolesManager.CardName.Charon);
+        showIfOut.Add(RolesManager.CardName.Medusa);
+        showIfOut.Add(RolesManager.CardName.Hades);
+        showIfOut.Add(RolesManager.CardName.Siren);
+        showIfOut.Add(RolesManager.CardName.Hydra);
+        showIfOut.Add(RolesManager.CardName.Sisyphus);
+        return showIfOut;
     }
 }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f274f0a67ab3ef2429ba42b612be905c, type: 3}
   m_Name: DryadRole
   m_EditorClassIdentifier: 
-  description: She chooses a player to have their card swapped with hers. Dryad doesn't
-    see the card she got.
+  description: She chooses a player to have their card swapped with hers. Dryad sees
+    the card she got.
   roleName: Dryad
   behaviour: {fileID: 0}
   image: {fileID: 21300000, guid: 45bf56c512f39754e859dde53fd9d34b, type: 3}

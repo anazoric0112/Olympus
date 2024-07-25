@@ -10,6 +10,7 @@ public class TimerManager : MonoBehaviour
     [SerializeField] Image timerTop;
     [SerializeField] Image timerBottom;
     private float moveTime = 20;
+    private float roleDisplayTime = 30;
     private float discussionTime = 60*5;
     private float votingTime = 30;
     private float resultTime = 60;
@@ -49,6 +50,11 @@ public class TimerManager : MonoBehaviour
 
     public void StartMove(){
         current = currentMax = moveTime;
+        running=true;
+    }
+
+    public void StartRoleDisplay(){
+        current = currentMax = roleDisplayTime;
         running=true;
     }
 

@@ -36,6 +36,7 @@ public class ArtemisBehaviour : RoleBehaviour
     
     public override void DoVotedForPassive(RolesManager.Team votingFor)
     {
+        doneDeathEffect = false;
         if (votingFor!=RolesManager.Team.Tartarus) return;
         
         string playerId = GameManager.Instance.FindPlayerByCard(Name);
@@ -52,7 +53,7 @@ public class ArtemisBehaviour : RoleBehaviour
                 return;
             }
         }
-        
+        doneDeathEffect=true;
         GameManager.Instance.SetOnlyVoteCounts(GameManager.Instance.FindPlayerByCard(Name));
     }
 }

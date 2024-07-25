@@ -13,22 +13,37 @@ public class NewRoleDisplay : MonoBehaviour
     [SerializeField] GameObject instructionText;
     [SerializeField] Sprite nyxHemeraImage;
 
+    [SerializeField] Button descOpenButton;
+    [SerializeField] GameObject descModal;
+    [SerializeField] TMP_Text descText;
+    [SerializeField] TMP_Text descTitle;
+    [SerializeField] Button descCloseButton;
+
     private bool showed = false;
     private bool runOut = false;
+    private bool initialOver = false;
     private Sprite roleImage;
+    private float initialTimer = 10;
 
     void Start()
     {
-        TimerManager.Instance.StartMove();
+        TimerManager.Instance.StartRoleDisplay();
         TimerManager.Instance.RestoreSavedTime();
         
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(nextButton);
         
         Role role = GamePlayer.Instance.NextRole;
+        string roleTitle = role.GetName();
+        string roleDesc = role.GetDescription();
+        roleImage = role.GetImage();
+
         if (role.GetCardName()==RolesManager.CardName.Nyx 
-            || role.GetCardName()==RolesManager.CardName.Hemera) roleImage = nyxHemeraImage;
-        else roleImage = role.GetImage();
+            || role.GetCardName()==RolesManager.CardName.Hemera) {
+                roleImage = nyxHemeraImage;
+                roleTitle="Nyx & Hemera";
+                roleDesc = "You don't know whether you are Nyx or Hemera. At the beginning of a round, they both see info that someone is Tartarus member, but Hemera's info is true and Nyx's is false.";
+        }
         
         image.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);
         image.GetComponentInChildren<Image>().sprite = cardBack;
@@ -41,10 +56,30 @@ public class NewRoleDisplay : MonoBehaviour
             ToggleImage();
         });
 
-        TimerManager.Instance.StartMove();
+        descText.text = roleDesc;
+        descTitle.text = roleTitle;
+
+        descOpenButton.onClick.AddListener(()=>{
+            descModal.SetActive(true);
+        });
+        descCloseButton.onClick.AddListener(()=>{
+            descModal.SetActive(false);
+        });
+
+        SetButtonText(((int)initialTimer).ToString());
+        nextButton.interactable=false;
     }
 
     void Update(){
+        initialTimer-=Time.deltaTime;
+        if ((int)initialTimer>=0){
+            SetButtonText(((int)initialTimer).ToString());
+        } else if (!initialOver){
+            nextButton.interactable=true;
+            SetButtonText("Next");
+            initialOver=true;
+        }
+
         if (TimerManager.Instance.IsRunOut() && !runOut && WiFiManager.IsConnected()) {
             runOut = true;
             DisplayManager.GoToNextScene();
@@ -60,5 +95,9 @@ public class NewRoleDisplay : MonoBehaviour
             instructionText.SetActive(false);
         }
         if (added) showed = !showed;
+    }
+
+    private void SetButtonText(string t){
+        nextButton.GetComponentInChildren<TMP_Text>().text=t;
     }
 }

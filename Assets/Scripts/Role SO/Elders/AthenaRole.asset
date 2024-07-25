@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AthenaRole
   m_EditorClassIdentifier: 
   description: At the beginning of a round, she sees other elders. At the beginning
-    of each third round, she sees one of Tartarus members, but doesn't see his specific
-    role. This is tied to card of Athena, and not the player currently in its posession.
+    of each third round, she sees one of Tartarus members. This is tied to card of
+    Athena, and not the player currently in its posession.
   roleName: Athena
   behaviour: {fileID: 0}
   image: {fileID: 21300000, guid: 5016e0f84199c8d459098def88127ed1, type: 3}

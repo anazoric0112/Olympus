@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     public List<string> playersIdsList = new List<string>();
     public Dictionary<string, RolesManager.CardName> lastPlayersOut = new Dictionary<string, RolesManager.CardName>(); //ovde se cuva ime-karta, samo da se prikaze posle
 
-
     private Dictionary<string, int> votesForElders = new Dictionary<string, int>();
     private Dictionary<string, int> votesForCursed = new Dictionary<string, int>();
     public Dictionary<string, string> whoVotedForWho = new Dictionary<string, string>();
@@ -140,7 +139,8 @@ public class GameManager : MonoBehaviour
         string[] data = dataString.Split("#");
 
         foreach(string name in data){
-            tableCards.Add(roleInstances[(RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),name)]);
+            Role role = roleInstances[(RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),name)];
+            tableCards.Add(role);
         }
         PrintGameState();
     }
@@ -264,8 +264,7 @@ public class GameManager : MonoBehaviour
         forEldersVoteResultMI=t;
 
         foreach(Role r in roleInstances.Values){
-            if (r.Behaviour.Team==RolesManager.Team.Tartarus 
-                && r.GetCardName()!=RolesManager.CardName.Charon) {
+            if (r.Behaviour.Team==RolesManager.Team.Tartarus) {
                 r.Behaviour.AddMove(forEldersVoteMI);
             }
             r.Behaviour.AddMove(forCursedVoteMI);
@@ -278,6 +277,25 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------------
     //Helper public methods
     //------------------------------------------------------------
+
+    public List<Role> GetAllCardsInGame(){
+        List<Role> ret = new List<Role>();
+        List<RolesManager.CardName> isSelected = new List<RolesManager.CardName>();
+
+        foreach(Role r in tableCards) {
+            isSelected.Add(r.GetCardName());
+        }
+        foreach(RolesManager.CardName card in playerCards.Values){
+            isSelected.Add(card);
+        }
+
+        RolesManager rolesManager = FindObjectOfType<RolesManager>();
+        foreach(Role role in rolesManager.GetAllRoles()){
+            if (isSelected.Contains(role.GetCardName())) ret.Add(role);
+        }
+
+        return ret;
+    }
 
     public string GetNextElderShow(){
         return dedicatedNextElderId;
@@ -605,8 +623,7 @@ public class GameManager : MonoBehaviour
         roleInstances[RolesManager.CardName.Hades].SetRoleBehaviour(new HadesBehaviour());
 
         foreach(Role r in roleInstances.Values){
-            if (r.Behaviour.Team==RolesManager.Team.Tartarus 
-                && r.GetCardName()!=RolesManager.CardName.Charon) {
+            if (r.Behaviour.Team==RolesManager.Team.Tartarus) {
                 r.Behaviour.AddMove(forEldersVoteMI);
             }
             r.Behaviour.AddMove(forCursedVoteMI);

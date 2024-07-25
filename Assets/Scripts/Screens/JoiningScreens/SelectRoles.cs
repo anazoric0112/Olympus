@@ -13,7 +13,6 @@ using UnityEngine.UI;
 public class SelectRoles : MonoBehaviour
 {    
     [SerializeField] Button startGame;
-    [SerializeField] Button backButton;
     [SerializeField] GameObject scrollableCards;
     [SerializeField] GameObject roleCardPrefab;
     [SerializeField] GameObject cardGroupPrefab;
@@ -41,7 +40,6 @@ public class SelectRoles : MonoBehaviour
         rolesManager = FindObjectOfType<RolesManager>();
 
         startGame.onClick.AddListener(async ()=>{
-            backButton.interactable=false;
             leaving = true;
             DisplayManager.PressButtonAndWait(startGame);
 
@@ -57,18 +55,9 @@ public class SelectRoles : MonoBehaviour
                 // Debug.Log(e);
                 DisplayManager.UnpressButton(startGame);
                 leaving = false;
-                backButton.interactable=true;
             }
         });
-        backButton.onClick.AddListener(async ()=>{
-            leaving = true;
-            startGame.interactable=false;
-            DisplayManager.PressButtonAndWait(backButton);
-            await GoBack();
-            DisplayManager.UnpressButton(backButton);
-            startGame.interactable=true;
-            leaving = false;
-        });
+        
         descCloseButton.onClick.AddListener(()=>{
             descModal.SetActive(false);
         });
@@ -82,7 +71,6 @@ public class SelectRoles : MonoBehaviour
 
         wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(startGame);
-        wiFiManager.AddToInteractables(backButton);
 
         FillCards();
     }
@@ -90,11 +78,6 @@ public class SelectRoles : MonoBehaviour
     void Update()
     {
         UpdateInteractables();
-    }
-    
-    private async Task GoBack(){
-        await connectionManager.LeaveLobby();
-        DisplayManager.BackToStart();
     }
 
     private void UpdateInteractables(){

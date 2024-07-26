@@ -8,7 +8,6 @@ public class NewRoleDisplay : MonoBehaviour
 {
     [SerializeField] GameObject image;
     [SerializeField] Button toggleImageButton;
-    [SerializeField] Sprite cardBack;
     [SerializeField] Button nextButton;
     [SerializeField] GameObject instructionText;
     [SerializeField] Sprite nyxHemeraImage;
@@ -46,7 +45,7 @@ public class NewRoleDisplay : MonoBehaviour
         }
         
         image.GetComponentInChildren<Image>().color = new Color32(255,255,255,255);
-        image.GetComponentInChildren<Image>().sprite = cardBack;
+        image.GetComponentInChildren<Image>().sprite = DisplayManager.CardBack;
 
         nextButton.onClick.AddListener(()=>{
             DisplayManager.GoToNextScene(nextButton);
@@ -89,7 +88,7 @@ public class NewRoleDisplay : MonoBehaviour
     private void ToggleImage(){
         bool added = false;
         if (showed){
-            added = DisplayManager.RotateCard(image.gameObject, image.GetComponentInChildren<Image>(), cardBack);
+            added = DisplayManager.RotateCard(image.gameObject, image.GetComponentInChildren<Image>(), DisplayManager.CardBack);
         } else {
             added = DisplayManager.RotateCard(image.gameObject, image.GetComponentInChildren<Image>(), roleImage);
             instructionText.SetActive(false);

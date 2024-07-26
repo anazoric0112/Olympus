@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -44,6 +45,7 @@ public class DisplayManager : MonoBehaviour
     [SerializeField] public Sprite cardBack;
     [SerializeField] public Sprite questionBack;
     [SerializeField] public Sprite questionBackNonClickable;
+
     static public Color32 ErrorColor{
         get {return FindObjectOfType<DisplayManager>().errorColor;}
     }
@@ -197,4 +199,5 @@ public class DisplayManager : MonoBehaviour
         currentRotates.Add(new RotatingCard(card, sprite, image));
         return true;
     }
+
 }

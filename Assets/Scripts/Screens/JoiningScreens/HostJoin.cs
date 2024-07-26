@@ -33,7 +33,13 @@ public class HostJoin : MonoBehaviour
         });
     }
 
-    void Start(){
+    void Start(){        
+        name.onSelect.AddListener((string val)=>{
+            FindObjectOfType<KeyboardManager>().SelectInput(name);
+        });
+        name.shouldHideMobileInput=true;
+        name.shouldHideSoftKeyboard=true;
+
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(makeLobby);
         wiFiManager.AddToInteractables(name);

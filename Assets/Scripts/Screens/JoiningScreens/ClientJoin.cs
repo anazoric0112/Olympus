@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -14,7 +15,9 @@ public class ClientJoin : MonoBehaviour
     [SerializeField] TMP_InputField gameCode;
     [SerializeField] TMP_InputField playerName;
 
+
     private ConnectionManager connectionManager;
+    private TMP_InputField selectedInput = null;
     
     void Awake(){
         connectionManager = FindObjectOfType<ConnectionManager>();
@@ -39,6 +42,18 @@ public class ClientJoin : MonoBehaviour
     }
 
     void Start(){
+        gameCode.onSelect.AddListener((string val)=>{
+            FindObjectOfType<KeyboardManager>().SelectInput(gameCode);
+        });
+        playerName.onSelect.AddListener((string val)=>{
+            FindObjectOfType<KeyboardManager>().SelectInput(playerName);
+        });
+
+        gameCode.shouldHideMobileInput=true;
+        playerName.shouldHideMobileInput=true;
+        gameCode.shouldHideSoftKeyboard=true;
+        playerName.shouldHideSoftKeyboard=true;
+
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(joinGame);
         wiFiManager.AddToInteractables(gameCode);
@@ -72,4 +87,5 @@ public class ClientJoin : MonoBehaviour
         SceneManager.LoadScene((int)DisplayManager.Scenes.Lobby);        
 
     }
+
 }

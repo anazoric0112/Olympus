@@ -68,5 +68,6 @@ MonoBehaviour:
   lossColor:
     serializedVersion: 2
     rgba: 4289572351
-  cardBack: {fileID: 21300000, guid: 9d8532f6640a8f8408121a8a526be1f5, type: 3}
+  cardBack: {fileID: 21300000, guid: bf6644f390d13a141900297f1482f4ca, type: 3}
   questionBack: {fileID: 21300000, guid: 94ed0235819b5be4ebadc17465190b0b, type: 3}
+  questionBackNonClickable: {fileID: 21300000, guid: c7452f6fe82e902408794d626471f99a, type: 3}

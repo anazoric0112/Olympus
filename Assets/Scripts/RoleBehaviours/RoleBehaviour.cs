@@ -88,7 +88,7 @@ public class RoleBehaviour : MonoBehaviour
     public virtual void ToNextScene(int moveIndex){
         
         if (GameManager.Instance.lastRoundMove>moveIndex
-            || !HasMove(moveIndex)){ //dodala sam naknadno ovu liniju, ne znam oce li praviti problem ###
+            || !HasMove(moveIndex)){
             DisplayManager.ToWaiting();
         } else  {
             ToNextVotingScene(moveIndex);

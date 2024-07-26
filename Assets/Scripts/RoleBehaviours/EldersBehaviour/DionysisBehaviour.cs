@@ -42,9 +42,9 @@ public class DionysisBehaviour : RoleBehaviour
             string hisVote=kp.Value;
 
             Role r = GameManager.Instance.roleInstances[GameManager.Instance.playerCards[player]];
-            RolesManager.Team t=r.Behaviour.Team;
+            RolesManager.CardClass cardClass=r.Behaviour.CardClass;
 
-            if (hisVote!=playerId && t==RolesManager.Team.Tartarus) {
+            if (hisVote!=playerId && cardClass==RolesManager.CardClass.Cursed) {
                 GameManager.Instance.PlayerOut(player);
             }
         }

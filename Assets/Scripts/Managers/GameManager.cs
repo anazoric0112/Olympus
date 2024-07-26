@@ -169,6 +169,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("Players swap with fallback called with "+p1+" and "+p2);
         RolesManager.CardName c1=playerCards[p1];
         RolesManager.CardName c2=playerCards[p2];
+
+        if (fallbackRoles.ContainsKey(p1)) TakeFromTable(fallbackRoles[p1].ToString(), true); //zbog feniksa
+
         fallbackRoles[p1]=c2;
         fallbackRoles[p2]=c1;
 
@@ -417,6 +420,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void PlayerOut(string player){
+        if (player=="") return;
         lastPlayersOut[playerNames[player]]=playerCards[player];
 
         playersOut.Add(player);
@@ -473,7 +477,7 @@ public class GameManager : MonoBehaviour
 
         onlyElder=null;
 
-        RestoreVotingMoves(); //### pomeri ovo gore...
+        RestoreVotingMoves();
         InstantiateRoleBehaviours();
     }
 
@@ -580,7 +584,10 @@ public class GameManager : MonoBehaviour
         if (p.FallbackRole!=null) {
             //phoenix edgecase
             p.Role = p.FallbackRole;
-            RPCsManager.Instance.TakeFromTableServerRpc(p.NextRole.GetName(),true); 
+            if (p.FallbackRole.GetCardName()==RolesManager.CardName.Phoenix) {
+                //samo ako je feniks u pitanju, njegova karta treba da se odbaci na sto
+                RPCsManager.Instance.TakeFromTableServerRpc(p.NextRole.GetName(),true); 
+            }
             p.NextRole=p.FallbackRole;
             playerCards[p.Id]=p.Role.GetCardName();
         }

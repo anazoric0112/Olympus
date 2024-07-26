@@ -355,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\nGame is played between two teams: Olympus and Tartarus. Team Olympus
+  m_text: "\r\nGame is played between two teams: Olympus and Tartarus. Team Olympus
     has 4 classes of roles: elders, plotters, vindictives and deceivers. Team Tartarus
     has only 1 class: cursed. Goal of Olympus is to discover all members of Tartarus,
     and the Goal of Tartarus is to discover all elders of Olympus. Team which fulfills
@@ -365,13 +365,13 @@ MonoBehaviour:
     is beginning that round.\r\n\r\n2) Moves: \r\nRoles which have active effects
     make their moves at this phase, at fixed predefined order:\r\n1. Phoenix gets
     a card from the table, and later performs action in order dedicated to that card
-    if there is any\r\n2. Aphrodite, Dionysus, Zeus and Athena see their dedicated
-    info\r\n3. Artemis, Nyx and Hemera\r\n4. Siren, Hades, Medusa and Charon see
-    other cursed\r\n5. Pegasus\r\n6. Pandora\r\n7. Dryad\r\n8. Dracaena\r\n9. Cassandra\r\n10.
-    Charon sees card of one Olympus member\r\n\r\nEvery player has 20s to perform
-    their action. They can finish earlier by clicking 'Next'.\r\nPlayers who had
-    their cards swapped perform actions attached to cards they had at the beginning
-    of the round. They won't be informed about their card swap, nor which card they
+    if there is any\r\n2. Elders, Cursed, Artemis, Nyx and Hemera see their dedicated
+    info\r\n3. Athena sees a cursed every third round, starting from second\r\n4.
+    Pegasus\r\n \r\n5. Pandora\r\n6. Dryad\r\n7. Dracaena\r\n8. Cassandra\r\n9. Charon
+    sees card of one Olympus members\r\n\r\nEvery player has 20s to perform their
+    action. They can finish earlier by clicking 'Next'.\r\nPlayers who had their
+    cards swapped perform actions attached to cards they had at the beginning of
+    the round. They won't be informed about their card swap, nor which card they
     are ending round with at the voting discussion, but they will get voting right
     according to the card they are found with at the end of the round. They will
     remain with that card until the next round, when they will find it out in the
@@ -382,45 +382,40 @@ MonoBehaviour:
     for Tartarus member:\r\n\r\nVoting is done in secret and anonymously.\r\nVoting
     right have all players still in game.\r\nName of person voted is always revealed,
     with following additional information based on the role of the one voted out.\r\nIf
-    it is tied, nobody gets voted out, but names of the players tied will be displayed.\r\nIf
-    the one voted out is member of Tartarus, he is out of the game and has no more
-    voting right, but he can still take part in discussion phase. Members of Tartarus
-    are notified about him being out, but members of Olympus are not.\r\nIf the one
-    voted out is one of the elders, he is out of the game and everyone is notified
-    about that and his identity. He has no right to participate at any phases left.\r\nIf
-    the one voted out is member of Olympus whose voting out doesn't have a side effect,
-    nothing happens.\r\nIf the one voted out is member of Olympus whose voting has
-    a side effect, the effect takes place. Depending of the role and effect, certain
-    players get notified.\r\nIf it is the end of the game, round is finished and
-    game result is displayed.\r\n\r\n5) Voting for elder:\r\n\r\nVoting is done in
-    secret and anonymously.\r\nVoting right have all Tartarus members still in game.\r\nName
-    of person voted is always revealed to Tartarus, with following additional information
-    based on the role of the one voted out.\r\nIf it is tied, nobody gets voted out,
-    but names of the players tied will be displayed.\r\nIf the one voted out is one
-    of the elders, he is out of the game and everyone is notified about that and
-    his identity. He has no right to participate at any phases left. If that is not
-    the end of the game, one member of Tartarus get to chose 1 player from Olympus
-    and everyone in Tartarus find out which card he has at the moment.\r\nIf the
-    one voted out is member of Olympus whose voting has a side effect, the effect
-    takes place. Depending of the role and effect, certain players get notified.\r\nIf
-    the one voted out is member of Tartarus or member of Olympus whose voting out
-    doesn't have a side effect, nothing happens.\r\nIf the one voted out isn't elder
-    but is from Olympus, his vote in voting for Tartarus weighs 2 votes, independent
-    of the team he is in at that moment.\r\nIf it is the end of the game, round is
-    finished and game result is displayed.\r\n\nWhen joining the game, all players
-    must have disctinct names.\nNames can't be longer than 40 characters. \nMinimum
-    number of playres is 5.\nMaximum number of players is 20.\n\n*) Restrictions
-    when selecting cards:\n1. Number of Cursed selected must be between 1 and number
-    of all others devided by 3 and rounded (both limits included).\n2. Number of
-    Elders selected must be equal to or 1 less than number of Cursed selected.\n3.
-    You need at least 3 Cursed selected in order to select Dionysis.\n4. You need
-    at least 2 table cards in order to select Dracaena.\n5. You need at least 3 table
-    cards in order to select Phoenix.\n6. You need at least 3 table cards in order
-    to select Cassandra.\n7. You need at least 4 table cards in order to select both
-    Phoenix and Cassandra.\n8. You must select both Nyx and Hemera to select either
-    of them.\n9. You must select both Perseus and Medusa to select either of them.\n\n*)IMPORTANT:\nFor
-    the sake of secrecy and better play, you should sometimes randomly tap or scroll
-    the screen even when it is not your nove.\n"
+    it is tied, nobody gets voted out.\r\nIf the one voted out is member of Tartarus,
+    he is out of the game. \r\nIf the one voted out is one of the Elders, he is out
+    of the game.\r\nIf the one voted out is member of Olympus whose voting out doesn't
+    have a side effect, nothing happens.\r\nIf the one voted out is member of Olympus
+    whose voting has a side effect, the effect takes place. Depending of the role
+    and effect, certain players get notified.\r\nIf it is the end of the game, round
+    is finished and game result is displayed.\r\n\r\n5) Voting for elder:\r\n\r\nVoting
+    is done in secret and anonymously.\r\nVoting right have all Tartarus members
+    still in game.\r\nName of person voted is always revealed, with following additional
+    information based on the role of the one voted out.\r\nIf it is tied, nobody
+    gets voted out.\r\nIf the one voted out is one of the elders, he is out of the
+    game. If that is not the end of the game, one member of Tartarus get to chose
+    1 player from Olympus and everyone in Tartarus find out which card he has at
+    the moment.\r\nIf the one voted out is member of Olympus whose voting has a side
+    effect, the effect takes place. Depending of the role and effect, certain players
+    get notified.\r\nIf the one voted out is member of Tartarus or member of Olympus
+    whose voting out doesn't have a side effect, nothing happens.\r\nIf the one voted
+    out isn't elder but is from Olympus, his vote in voting for Tartarus weighs 2
+    votes, independent of the team he is in at that moment.\r\nIf it is the end of
+    the game, round is finished and game result is displayed.\r\n\r\nWhen joining
+    the game, all players must have disctinct names.\r\nNames can't be longer than
+    40 characters. \r\nMinimum number of playres is 4.\r\nMaximum number of players
+    is 20.\r\n\r\n*) Restrictions when selecting cards:\r\n1. Number of Cursed selected
+    must be between 1 and number of all others devided by 3 and rounded (both limits
+    included).\r\n2. Number of Elders selected must be equal to or 1 less than number
+    of Cursed selected.\r\n3. You need at least 3 Cursed selected in order to select
+    Dionysis.\r\n4. You need at least 2 table cards in order to select Dracaena.\r\n5.
+    You need at least 3 table cards in order to select Phoenix.\r\n6. You need at
+    least 3 table cards in order to select Cassandra.\r\n7. You need at least 4 table
+    cards in order to select both Phoenix and Cassandra.\r\n8. You must select both
+    Nyx and Hemera to select either of them.\r\n9. You must select both Perseus and
+    Medusa to select either of them.\r\n\r\n*)IMPORTANT:\r\nFor the sake of secrecy
+    and better play, you should sometimes randomly tap or scroll the screen even
+    when it is not your nove.\r\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d8430b571f3beed4587949031ea2bde8, type: 2}
   m_sharedMaterial: {fileID: 7732832783511030072, guid: d8430b571f3beed4587949031ea2bde8, type: 2}

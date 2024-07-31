@@ -15,10 +15,11 @@ public class ElderShow : MonoBehaviour
     void Start()
     {
         TimerManager.Instance.StartMove();
+        TimerManager.Instance.StartInitialTimer("Next", 3, nextButton);
         
         FindObjectOfType<WiFiManager>().AddToInteractables(nextButton);
         
-        string id = GameManager.Instance.GetNextElderShow();
+        string id = GameManager.Instance.NextElderShow;
         RolesManager.CardName card = GameManager.Instance.playerCards[id];
         cardImage.sprite = GameManager.Instance.roleInstances[card].GetImage();
         nameText.text = GameManager.Instance.playerNames[id];

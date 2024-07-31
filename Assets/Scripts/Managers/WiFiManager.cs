@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,7 @@ public class WiFiManager : MonoBehaviour
             EnableBack();
             Destroy(modal);
             modal = null;
+            FindObjectOfType<ConnectionManager>().RejoinRelay();
         }
         wasConnected = nowConnected;
     }
@@ -60,7 +62,6 @@ public class WiFiManager : MonoBehaviour
         o.GetComponent<RectTransform>().anchoredPosition=new Vector2(0, 0);
         return o;
     }
-
 
     private void EnableBack(){
         foreach(Selectable s in toEnable){

@@ -54,6 +54,7 @@ public class ConnectionManager : NetworkBehaviour
     private Player player;
     private bool asyncOngoing = false;
     private string current = PreGamePhase.Lobby.ToString();
+    private string gameCode ="";
 
     void Awake()
     {
@@ -120,6 +121,7 @@ public class ConnectionManager : NetworkBehaviour
 
                     if (!IsLobbyHost()){
                         await JoinRelay(lobby.Data[key_game_code].Value);
+                        gameCode = lobby.Data[key_game_code].Value;
                     }
                     current = phase;
 
@@ -219,7 +221,7 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
-    public async Task<string> CreateRelay(){
+    private async Task<string> CreateRelay(){
         asyncOngoing=true;
         string relayCode = null;
 
@@ -236,10 +238,11 @@ public class ConnectionManager : NetworkBehaviour
         }
 
         asyncOngoing=false;
+        gameCode=relayCode;
         return relayCode;
     }
 
-    public async Task JoinRelay(string code){
+    private async Task JoinRelay(string code){
         asyncOngoing=true;
 
         try{
@@ -321,6 +324,10 @@ public class ConnectionManager : NetworkBehaviour
             throw e;
         }
         asyncOngoing=false;
+    }
+
+    public async Task RejoinRelay(){
+        await JoinRelay(gameCode);
     }
 
     public string GetLobbyCode(){

@@ -10,8 +10,8 @@ public class Role : ScriptableObject
     [TextArea(2,10)]
     [SerializeField] string description;
     [SerializeField] string roleName;
-    [SerializeField] RoleBehaviour behaviour;
     [SerializeField] Sprite image;
+    [SerializeField] RoleBehaviour behaviour;
 
     public RoleBehaviour Behaviour {
         get { return behaviour; }

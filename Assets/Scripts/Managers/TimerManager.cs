@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,15 @@ public class TimerManager : MonoBehaviour
     private float currentMax = 0;
     private bool running = false;
     private float savedTime = -1;
+
+
+    //initial button-unclickable time for moves
+    private bool initialOver = true;
+    private float initialTimer = -1;
+    private string buttonText = "";
+    private Button button;
+
+
     
     static TimerManager instance;
     static public TimerManager Instance {
@@ -36,6 +46,11 @@ public class TimerManager : MonoBehaviour
 
     void Update()
     {
+        UpdateInitialTimer();
+        UpdateTimer();
+    }
+
+    private void UpdateTimer(){
         current -= Time.deltaTime;
         if (current<0f){
             running = false;
@@ -97,5 +112,29 @@ public class TimerManager : MonoBehaviour
     public int GetSeconds(){
         int currentRound = (int)Math.Round(current);
         return currentRound%60;
+    }
+
+    //-----------------Initial timer functions------------------
+    public void StartInitialTimer(string text, float time, Button btn){
+        buttonText=text;
+        button=btn;
+        initialTimer = time;
+        initialOver = false;
+        button.interactable=false;
+        SetButtonText(initialTimer.ToString());
+    }
+    private void UpdateInitialTimer(){
+        initialTimer-=Time.deltaTime;
+        
+        if ((int)initialTimer>=0 && !initialOver){
+            SetButtonText(((int)initialTimer).ToString());
+        } else if (!initialOver){
+            button.interactable=true;
+            SetButtonText(buttonText);
+            initialOver=true;
+        }
+    }
+    private void SetButtonText(string t){
+        button.GetComponentInChildren<TMP_Text>().text=t;
     }
 }

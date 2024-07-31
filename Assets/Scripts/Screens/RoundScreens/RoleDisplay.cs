@@ -23,9 +23,9 @@ public class RoleDisplay : MonoBehaviour
 
     private bool showed = false;
     private bool runOut = false;
-    private bool initialOver = false;
+    // private bool initialOver = false;
+    // private float initialTimer = 10;
     private Sprite roleImage;
-    private float initialTimer = 10;
 
     void Start()
     {
@@ -68,20 +68,10 @@ public class RoleDisplay : MonoBehaviour
             descModal.SetActive(false);
         });
 
-        SetButtonText(((int)initialTimer).ToString());
-        nextButton.interactable=false;
+        TimerManager.Instance.StartInitialTimer("Next",10f,nextButton);
     }
 
     void Update(){
-        initialTimer-=Time.deltaTime;
-        if ((int)initialTimer>=0){
-            SetButtonText(((int)initialTimer).ToString());
-        } else if (!initialOver){
-            nextButton.interactable=true;
-            SetButtonText("Next");
-            initialOver=true;
-        }
-
         if (TimerManager.Instance.IsRunOut() && !runOut && WiFiManager.IsConnected()) {
             runOut = true;
             DisplayManager.GoToNextScene();
@@ -97,9 +87,5 @@ public class RoleDisplay : MonoBehaviour
             instructionText.SetActive(false);
         }
         if (added) showed = !showed;
-    }
-
-    private void SetButtonText(string t){
-        nextButton.GetComponentInChildren<TMP_Text>().text=t;
     }
 }

@@ -16,6 +16,7 @@ public class SingleElder : MonoBehaviour
     void Start()
     {
         TimerManager.Instance.StartMove();
+        TimerManager.Instance.StartInitialTimer("Next",3f,nextButton);
         
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(nextButton);

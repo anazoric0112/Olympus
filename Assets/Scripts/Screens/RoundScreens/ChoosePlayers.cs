@@ -28,6 +28,8 @@ public class ChoosePlayers : MonoBehaviour
         if (myCard==RolesManager.CardName.Dryad || myCard==RolesManager.CardName.Dracaena) TimerManager.Instance.StartRoleDisplay();
         else TimerManager.Instance.StartMove();
         
+        TimerManager.Instance.StartInitialTimer("Submit",3f,submitButton);
+        
         wiFiManager=FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(submitButton);
 

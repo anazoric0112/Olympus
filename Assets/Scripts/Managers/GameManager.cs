@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, RolesManager.CardName> playerCards = new Dictionary<string, RolesManager.CardName>();
     public List<string> playersOut = new List<string>();
     public List<string> playersIdsList = new List<string>();
-    public Dictionary<string, RolesManager.CardName> lastPlayersOut = new Dictionary<string, RolesManager.CardName>(); //ovde se cuva ime-karta, samo da se prikaze posle
+    public Dictionary<string, RolesManager.CardName> lastPlayersOut = new Dictionary<string, RolesManager.CardName>(); //playerName : card
 
     private Dictionary<string, int> votesForElders = new Dictionary<string, int>();
     private Dictionary<string, int> votesForCursed = new Dictionary<string, int>();
@@ -79,6 +79,9 @@ public class GameManager : MonoBehaviour
     public string LastVotedOutName{
         get{return lastVotedOutName;}
     }
+    public string NextElderShow{
+        get {return dedicatedNextElderId;}
+    }
     static public GameManager Instance {
         get {return instance;}
     }
@@ -97,6 +100,7 @@ public class GameManager : MonoBehaviour
     void Start(){
         if (roleInstances.Count==0) InstantiateRoleBehaviours();
     }
+    
     
     //------------------------------------------------------------
     //Called when starting the game
@@ -145,8 +149,9 @@ public class GameManager : MonoBehaviour
         PrintGameState();
     }
 
+
     //------------------------------------------------------------
-    //Called after NetworkVariableChange or from RPC
+    //Called from RPC
     //------------------------------------------------------------
 
     public void PlayersSwap(string p1, string p2){
@@ -277,9 +282,14 @@ public class GameManager : MonoBehaviour
         PrintMoveIndexes();
     }
 
+
     //------------------------------------------------------------
-    //Helper public methods
+    //Helper public methods for frontend and RoleBehaviours
     //------------------------------------------------------------
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Getters
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     public List<Role> GetAllCardsInGame(){
         List<Role> ret = new List<Role>();
@@ -298,10 +308,6 @@ public class GameManager : MonoBehaviour
         }
 
         return ret;
-    }
-
-    public string GetNextElderShow(){
-        return dedicatedNextElderId;
     }
 
     public string GetRandomPlayerIdFromTeam(RolesManager.Team  team){
@@ -337,41 +343,9 @@ public class GameManager : MonoBehaviour
         return "";
     }
 
-    private void NextMove(){
-        Debug.Log("Next move called");
-        PrintMoveIndexes();
-        playersWentNext=0;
-        int prevmove = moveIndex;
-        MoveIndexForward();
-
-        if ((moveIndex & endChancesMI) !=0){
-            if (IsOver()){
-                SceneManager.LoadScene((int)DisplayManager.Scenes.EndGame);
-                return;
-            } else {
-                MoveIndexForward();
-            }
-        }
-
-        if (prevmove<=forEldersVoteMI && moveIndex>forEldersVoteMI) hasDoubleVote="";
-
-        if ((moveIndex&forEldersVoteResultMI)!=0 
-        && PlayersHaveMove(forEldersVoteMI)==0){
-            MoveIndexForward();
-            if ((moveIndex & endChancesMI) !=0) MoveIndexForward();
-            Debug.Log("Skipping vote result for elders");
-        }
-
-        if ((moveIndex & lastVotingMove)!=0){
-            NextRound();
-        } else {
-            RoleBehaviour rb = roleInstances[playerCards[GamePlayer.Instance.Id]].Behaviour;
-            rb.ToNextScene(moveIndex);
-
-            Debug.Log("State after player went to next move: ");
-            PrintGameState();
-        }
-    }
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods associated with voting or ending the game
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     public void ProcessVotes(bool voteForElders){
         lastPlayersOut.Clear();
@@ -398,25 +372,6 @@ public class GameManager : MonoBehaviour
         
         playersToWait = PlayersHaveMove(); //ovo je zbog ljudi koji ispadnu pa ne treba da se cekaju
         if (ThisPlayerOut()) playersToWait++; //ne znam radi li 
-    }
-
-    private void CountVotes(bool voteForElders){
-        lastVotedOutList.Clear();
-        int maxvotes=0;
-        Dictionary<string,int> votes = voteForElders? votesForElders : votesForCursed;
-
-        foreach(KeyValuePair<string,int> kp in votes){
-            if (kp.Value>maxvotes) {
-                lastVotedOutList.Clear();
-                lastVotedOutList.Add(kp.Key);
-                maxvotes=kp.Value;
-            } else if (kp.Value==maxvotes){
-                lastVotedOutList.Add(kp.Key);
-            }
-        }
-
-        if (lastVotedOutList.Count==1) lastVotedOut=lastVotedOutList[0];
-        else lastVotedOut="";
     }
 
     public void PlayerOut(string player){
@@ -481,9 +436,50 @@ public class GameManager : MonoBehaviour
         InstantiateRoleBehaviours();
     }
 
+
     //------------------------------------------------------------
     //Helper private methods
     //------------------------------------------------------------
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods associated with moves
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    private void NextMove(){
+        Debug.Log("Next move called");
+        PrintMoveIndexes();
+        playersWentNext=0;
+        int prevmove = moveIndex;
+        MoveIndexForward();
+
+        if ((moveIndex & endChancesMI) !=0){
+            if (IsOver()){
+                SceneManager.LoadScene((int)DisplayManager.Scenes.EndGame);
+                return;
+            } else {
+                MoveIndexForward();
+            }
+        }
+
+        if (prevmove<=forEldersVoteMI && moveIndex>forEldersVoteMI) hasDoubleVote="";
+
+        if ((moveIndex&forEldersVoteResultMI)!=0 
+        && PlayersHaveMove(forEldersVoteMI)==0){
+            MoveIndexForward();
+            if ((moveIndex & endChancesMI) !=0) MoveIndexForward();
+            Debug.Log("Skipping vote result for elders");
+        }
+
+        if ((moveIndex & lastVotingMove)!=0){
+            NextRound();
+        } else {
+            RoleBehaviour rb = roleInstances[playerCards[GamePlayer.Instance.Id]].Behaviour;
+            rb.ToNextScene(moveIndex);
+
+            Debug.Log("State after player went to next move: ");
+            PrintGameState();
+        }
+    }
 
     private void MoveIndexForward(){
         if (moveIndex==0) moveIndex=1;
@@ -493,24 +489,20 @@ public class GameManager : MonoBehaviour
         playersToWait=PlayersHaveMove();
     }
 
-    private bool IsOver(){
-        return TeamWon(RolesManager.Team.Olympus)
-                || TeamWon(RolesManager.Team.Tartarus);
-    }
+    private void AssignOnlyElderMove(){
+        RolesManager.CardName elder = RolesManager.CardName.None;
 
-    private bool TeamWon(RolesManager.Team winningTeam){
-        foreach(RolesManager.CardName card in playerCards.Values){
-            RolesManager.Team team = roleInstances[card].Behaviour.Team;
-            RolesManager.CardClass cls = roleInstances[card].Behaviour.CardClass;
-            
-            if (winningTeam==RolesManager.Team.Tartarus && cls==RolesManager.CardClass.Elder) return false;
+        foreach(RolesManager.CardName c in playerCards.Values){
+            if (roleInstances[c].Behaviour.CardClass!=RolesManager.CardClass.Elder) continue;
 
-            if (winningTeam==RolesManager.Team.Olympus && team==RolesManager.Team.Tartarus) return false;
+            if (elder != RolesManager.CardName.None) return;
+            elder = c;
         }
-
-        return true;
+        if (elder == RolesManager.CardName.None) return;
+        roleInstances[elder].Behaviour.AddMove(singleElderPreGameMI);
+        onlyElder = roleInstances[elder];
     }
-
+    
     private int PlayersHaveMove(int mi=-1){
         if (mi==-1) mi=moveIndex;
         int cnt=0;
@@ -522,7 +514,11 @@ public class GameManager : MonoBehaviour
         }
         return cnt;
     }
-
+    
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods associated with voting
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    
     private bool ThisPlayerOut(){
         foreach(string player in lastPlayersOut.Keys){
             if (player==GamePlayer.Instance.Name) return true;
@@ -546,8 +542,30 @@ public class GameManager : MonoBehaviour
         int playersCnt = playersIdsList.Count;
         int rng = (playersCnt*11 + 200%playersCnt) % elders.Count;
         dedicatedNextElderId = elders[rng];
-
     }
+    
+    private void CountVotes(bool voteForElders){
+        lastVotedOutList.Clear();
+        int maxvotes=0;
+        Dictionary<string,int> votes = voteForElders? votesForElders : votesForCursed;
+
+        foreach(KeyValuePair<string,int> kp in votes){
+            if (kp.Value>maxvotes) {
+                lastVotedOutList.Clear();
+                lastVotedOutList.Add(kp.Key);
+                maxvotes=kp.Value;
+            } else if (kp.Value==maxvotes){
+                lastVotedOutList.Add(kp.Key);
+            }
+        }
+
+        if (lastVotedOutList.Count==1) lastVotedOut=lastVotedOutList[0];
+        else lastVotedOut="";
+    }
+    
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods associated with moving to next round
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     
     private void NextRound(){
         RoundStatsReset();
@@ -599,6 +617,28 @@ public class GameManager : MonoBehaviour
         fallbackRoles.Clear();
     }
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods associated with starting/ending the game 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    
+    private bool IsOver(){
+        return TeamWon(RolesManager.Team.Olympus)
+                || TeamWon(RolesManager.Team.Tartarus);
+    }
+
+    private bool TeamWon(RolesManager.Team winningTeam){
+        foreach(RolesManager.CardName card in playerCards.Values){
+            RolesManager.Team team = roleInstances[card].Behaviour.Team;
+            RolesManager.CardClass cls = roleInstances[card].Behaviour.CardClass;
+            
+            if (winningTeam==RolesManager.Team.Tartarus && cls==RolesManager.CardClass.Elder) return false;
+
+            if (winningTeam==RolesManager.Team.Olympus && team==RolesManager.Team.Tartarus) return false;
+        }
+
+        return true;
+    }
+
     private void InstantiateRoleBehaviours(){
         RolesManager rolesManager = FindObjectOfType<RolesManager>();
         foreach (Role r in rolesManager.GetAllRoles()){
@@ -641,20 +681,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void AssignOnlyElderMove(){
-        RolesManager.CardName elder = RolesManager.CardName.None;
-
-        foreach(RolesManager.CardName c in playerCards.Values){
-            if (roleInstances[c].Behaviour.CardClass!=RolesManager.CardClass.Elder) continue;
-
-            if (elder != RolesManager.CardName.None) return;
-            elder = c;
-        }
-        if (elder == RolesManager.CardName.None) return;
-        roleInstances[elder].Behaviour.AddMove(singleElderPreGameMI);
-        onlyElder = roleInstances[elder];
-    }
-
     private void RestoreVotingMoves(){
         forCursedVoteMI = 1<<12;
         forCursedVoteResultMI = 1<<13;
@@ -662,6 +688,10 @@ public class GameManager : MonoBehaviour
         forEldersVoteResultMI = 1<<16;
     }
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //Methods for Debug print
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    
     private void PrintMoveIndexes(){
         string debugText = "";
         foreach(KeyValuePair<string, RolesManager.CardName> kp in playerCards){

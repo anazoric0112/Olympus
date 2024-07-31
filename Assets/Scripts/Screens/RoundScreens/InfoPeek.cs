@@ -26,6 +26,7 @@ public class InfoPeek : MonoBehaviour
     void Start()
     {
         TimerManager.Instance.StartMove();
+        TimerManager.Instance.StartInitialTimer("Submit",3f,submitButton);
         
         wiFiManager=FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(submitButton);

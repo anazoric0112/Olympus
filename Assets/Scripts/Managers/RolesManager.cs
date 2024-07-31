@@ -63,18 +63,6 @@ public class RolesManager : MonoBehaviour
         foreach(Role r in cursed) roles.Add(r);
     }
 
-    void Update()
-    {
-        
-    }
-
-    public Role GetRoleByName(string name){
-        foreach(Role r in roles){
-            if (r.GetName()==name) return r;
-        }
-        return null;
-    }
-
     public List<Role> GetAllRoles(){
         return roles;
     }

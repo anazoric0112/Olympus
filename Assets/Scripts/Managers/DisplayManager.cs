@@ -189,7 +189,7 @@ public class DisplayManager : MonoBehaviour
         background.color=new Color32(255,255,255,255);
         FindObjectOfType<ConnectionManager>().LeaveRelay();
         GameManager.Instance.ResetGame();
-        SceneManager.LoadScene((int)DisplayManager.Scenes.MainMenu);
+        SceneManager.LoadScene((int)Scenes.MainMenu);
     }
 
     static public bool RotateCard(GameObject card, Image image, Sprite sprite){

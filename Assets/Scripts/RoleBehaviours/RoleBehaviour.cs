@@ -74,7 +74,8 @@ public class RoleBehaviour : MonoBehaviour
         return (moveIndex & moveIndexes) != 0;
     }
 
-    protected virtual void AddToRevealing(RolesManager.CardName role, bool revealCard=true){
+    protected virtual void FillRevealing(){}
+    protected void AddToRevealing(RolesManager.CardName role, bool revealCard=true){
         string player = GameManager.Instance.FindPlayerByCard(role);
         if (player=="") return;
 
@@ -95,7 +96,7 @@ public class RoleBehaviour : MonoBehaviour
         }
     }
 
-    public virtual void ToNextVotingScene(int moveIndex){
+    public void ToNextVotingScene(int moveIndex){
         if (moveIndex==GameManager.Instance.singleElderPreGameMI){ 
             //ovaj if bi trebalo da bude u elderima ali radi pa cu da ga ostavim ###
             SceneManager.LoadScene((int)DisplayManager.Scenes.SingleElderPeek);
@@ -140,7 +141,6 @@ public class RoleBehaviour : MonoBehaviour
         }
     }
 
-    protected virtual void FillRevealing(){}
 
     public virtual void DoActive(string name1="", string name2=""){}
 
@@ -150,7 +150,7 @@ public class RoleBehaviour : MonoBehaviour
 
     public virtual void DoDeathEffect(RolesManager.Team votingFor){}
 
-    public virtual void ProtectFromDying(){
+    public void ProtectFromDying(){
         if (CardClass!=RolesManager.CardClass.Elder) return;
         lives++;
     }

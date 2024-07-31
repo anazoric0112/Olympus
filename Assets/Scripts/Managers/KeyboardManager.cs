@@ -29,7 +29,6 @@ public class KeyboardManager : MonoBehaviour
         foreach(Button b in keyboard.GetComponentsInChildren<Button>()){
             if (b.GetComponentInChildren<TMP_Text>().text!="") letters.Add(b);
         }
-        Debug.Log(letters.Count);
 
         foreach(Button b in letters){
             b.onClick.AddListener(()=>{
@@ -59,7 +58,6 @@ public class KeyboardManager : MonoBehaviour
                     if (letter[0]>='a' && letter[0]<='z') b.GetComponentInChildren<TMP_Text>().text = letter.ToUpper();
                 }
             }
-            Debug.Log(caseState);
         });
 
         backspace.onClick.AddListener(()=>{

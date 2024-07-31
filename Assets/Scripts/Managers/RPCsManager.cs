@@ -60,6 +60,7 @@ public class RPCsManager : NetworkBehaviour
     public void PhoenixRoleChangeServerRpc(string p, string c){
         PhoenixRoleChangeClientRpc(p,c);
     }
+    
     [ServerRpc(RequireOwnership = false)]
     public void SwapVotingMovesServerRpc(){
         SwapVotingMovesClientRpc();

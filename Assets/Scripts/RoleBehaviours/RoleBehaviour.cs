@@ -100,44 +100,37 @@ public class RoleBehaviour : MonoBehaviour
         if (moveIndex==GameManager.Instance.singleElderPreGameMI){ 
             //ovaj if bi trebalo da bude u elderima ali radi pa cu da ga ostavim ###
             SceneManager.LoadScene((int)DisplayManager.Scenes.SingleElderPeek);
-            Debug.Log("Single elder peek from TNVS");
 
         } else if (moveIndex==GameManager.Instance.discussionMI){
 
             GamePlayer.Instance.Role=GamePlayer.Instance.NextRole;
             SceneManager.LoadScene((int)DisplayManager.Scenes.Discussion);
-            Debug.Log("Discussion from TNVS");
 
         } else if (moveIndex==GameManager.Instance.forCursedVoteMI){
 
             SceneManager.LoadScene((int)DisplayManager.Scenes.Voting);
-            Debug.Log("Vote for cursed from TNVS");
 
         } else if (moveIndex==GameManager.Instance.forCursedVoteResultMI){
 
             GameManager.Instance.ProcessVotes(false);
             SceneManager.LoadScene((int)DisplayManager.Scenes.VotingResult);
-            Debug.Log("Vote for cursed result from TNVS");
 
         } else if (moveIndex==GameManager.Instance.forEldersVoteMI){
 
             if (Team==RolesManager.Team.Tartarus){
                 SceneManager.LoadScene((int)DisplayManager.Scenes.Voting);
             }
-            Debug.Log("Vote for elders TNVS");
 
         } else if (moveIndex==GameManager.Instance.forEldersVoteResultMI){
 
             GameManager.Instance.ProcessVotes(true);
             SceneManager.LoadScene((int)DisplayManager.Scenes.VotingResult);
-            Debug.Log("Vote for elders result from TNVS");
 
         }  else if (moveIndex==GameManager.Instance.elderShowMI){
 
             if (Team==RolesManager.Team.Tartarus){    
                 SceneManager.LoadScene((int)DisplayManager.Scenes.ElderShow);
-            } 
-            Debug.Log("Show elder to cursed from TNVS");
+            }
         }
     }
 

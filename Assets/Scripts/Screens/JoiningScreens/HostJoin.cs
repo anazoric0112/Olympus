@@ -57,7 +57,7 @@ public class HostJoin : MonoBehaviour
             await connectionManager.CreateLobby(name.text);
             SceneManager.LoadScene((int)DisplayManager.Scenes.Lobby);
         } catch(Exception e){
-            Debug.Log(e);
+            name.GetComponent<Image>().color = DisplayManager.ErrorColor;
         }
     }
 }

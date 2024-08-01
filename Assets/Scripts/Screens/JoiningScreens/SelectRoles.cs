@@ -52,7 +52,6 @@ public class SelectRoles : MonoBehaviour
                 errorText.text=e.Message;
                 errorModal.SetActive(true);
 
-                // Debug.Log(e);
                 DisplayManager.UnpressButton(startGame);
                 leaving = false;
             }

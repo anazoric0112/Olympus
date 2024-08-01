@@ -39,7 +39,6 @@ public class GameLobby : MonoBehaviour
                 errorModal.SetActive(true);
                 errorText.text=e.Message;
 
-                // Debug.Log(e);
                 DisplayManager.UnpressButton(nextButton);
                 leaving=false;
                 backButton.interactable=true;

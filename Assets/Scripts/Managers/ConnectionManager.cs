@@ -133,7 +133,6 @@ public class ConnectionManager : NetworkBehaviour
             try{
                 lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
                 string phase = lobby.Data[pre_game_phase].Value;
-                Debug.Log(phase);
 
                 if (phase==PreGamePhase.Rejoin.ToString() && current!=phase){
 
@@ -195,8 +194,6 @@ public class ConnectionManager : NetworkBehaviour
             };
 
             lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, opt);
-
-            // Debug.Log("Created lobby "+lobby.Id + " " + lobby.LobbyCode +" by "+ HostId);
         } catch (LobbyServiceException e) {
             Debug.Log("Error: ConnectionManager.CreateLobby() "+ e);
             throw e;
@@ -231,8 +228,6 @@ public class ConnectionManager : NetworkBehaviour
                 await LeaveLobby();
                 throw new Exception("Player with that name already exists");
             }
-
-            // Debug.Log("Joined to "+lobby.Id+ " with code " +gameCode);
         } catch (Exception e){
             Debug.Log("Error: ConnectionManager.JoinLobbyByCode() "+ e);
             throw new Exception(e.Message);
@@ -249,8 +244,6 @@ public class ConnectionManager : NetworkBehaviour
             await LobbyService.Instance.RemovePlayerAsync(lobby.Id, playerId);
             lobby = null;
             current = PreGamePhase.Lobby.ToString();
-
-            // Debug.Log("Left lobby "+playerId);
         } catch (LobbyServiceException e){
             Debug.Log("Error: ConnectionManager.LeaveLobby() "+ e);
         }
@@ -298,10 +291,7 @@ public class ConnectionManager : NetworkBehaviour
     }
 
     public async Task RejoinRelay(){
-        // Debug.Log("Rejoin called");
-        // await JoinRelay(gameCode, true);
-        // currently isnt solved
-        // Debug.Log("Rejoin done");
+        // currently isnt solved ### to be done
     }
     
     public async Task MoveToSelect(){
@@ -359,8 +349,6 @@ public class ConnectionManager : NetworkBehaviour
                     Data = optData
                 }
             );
-            // Debug.Log("Relay started "+relayCode);
-            // Debug.Log("Generated "+assignedCards+" "+tableCards);
         } catch (Exception e){
             Debug.Log("Error: ConnectionManager.StartGame() "+ e);
             throw e;
@@ -390,23 +378,28 @@ public class ConnectionManager : NetworkBehaviour
 
     private async Task CreateRejoinLobby(string newHost, string oldHost){
         pauseReload=true;
-        int cnt = GameManager.Instance.playersIdsList.Count;
-        lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, new CreateLobbyOptions{
-            IsPrivate = false,
-            Player = new Player{
-                Data = new Dictionary<string, PlayerDataObject>{
-                    {"PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, GamePlayer.Instance.Name)}
+        try{
+            int cnt = GameManager.Instance.playersIdsList.Count;
+            lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, new CreateLobbyOptions{
+                IsPrivate = false,
+                Player = new Player{
+                    Data = new Dictionary<string, PlayerDataObject>{
+                        {"PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, GamePlayer.Instance.Name)}
+                    }
+                },
+                Data = new Dictionary<string, DataObject>{
+                    {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Idle.ToString())},
+                    {key_old_host,new DataObject(DataObject.VisibilityOptions.Member, oldHost) },
+                    {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, newHost) },
+                    {key_player_cnt,new DataObject(DataObject.VisibilityOptions.Member, cnt.ToString()) }
                 }
-            },
-            Data = new Dictionary<string, DataObject>{
-                {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Idle.ToString())},
-                {key_old_host,new DataObject(DataObject.VisibilityOptions.Member, oldHost) },
-                {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, newHost) },
-                {key_player_cnt,new DataObject(DataObject.VisibilityOptions.Member, cnt.ToString()) }
-            }
-        });
-        Debug.Log("2 New lobby made");
-        RejoinGameServerRpc(lobby.LobbyCode,oldHost,newHost);
+            });
+            Debug.Log("2 New lobby made");
+            RejoinGameServerRpc(lobby.LobbyCode,oldHost,newHost);
+        } catch (LobbyServiceException e){
+            Debug.Log("Error: ConnectionManager.CreateRejoinLobby(): "+e);
+        }
+
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -447,15 +440,19 @@ public class ConnectionManager : NetworkBehaviour
     }
 
     private async Task UpdateRejoinCodeInLobby(string code){
-        Dictionary<string, DataObject> lobbyData = (await LobbyService.Instance.GetLobbyAsync(lobby.Id)).Data;
-        lobbyData[key_game_code] = new DataObject(DataObject.VisibilityOptions.Member, code);
-        lobbyData[pre_game_phase] = new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Rejoin.ToString());
+        try{
+            Dictionary<string, DataObject> lobbyData = (await LobbyService.Instance.GetLobbyAsync(lobby.Id)).Data;
+            lobbyData[key_game_code] = new DataObject(DataObject.VisibilityOptions.Member, code);
+            lobbyData[pre_game_phase] = new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Rejoin.ToString());
 
-        lobby = await Lobbies.Instance.UpdateLobbyAsync(lobby.Id, 
-            new UpdateLobbyOptions{
-                Data = lobbyData
-            }
-        );
+            lobby = await Lobbies.Instance.UpdateLobbyAsync(lobby.Id, 
+                new UpdateLobbyOptions{
+                    Data = lobbyData
+                }
+            );
+        }catch (LobbyServiceException e){
+            Debug.Log("Error: ConnectionManager.UpdateRejoinCodeInLobby(): "+e);
+        }
     }
 
     public List<Player> GetPlayers(){

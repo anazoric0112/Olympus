@@ -69,23 +69,15 @@ public class ClientJoin : MonoBehaviour
         playerName.GetComponent<Image>().color = DisplayManager.InputColor;
 
         try {
-            await connectionManager.JoinLobbyByCode(playerName.text, gameCode.text);        
+            await connectionManager.JoinLobbyByCode(playerName.text, gameCode.text);     
+            SceneManager.LoadScene((int)DisplayManager.Scenes.Lobby);      
         }catch (Exception e){
-            Debug.Log(e.ToString());
             if (e.Message=="Player with that name already exists"){
                 playerName.GetComponent<Image>().color = DisplayManager.ErrorColor;
-            }
-            else {
+            } else {
                 gameCode.GetComponent<Image>().color = DisplayManager.ErrorColor;
             }
-
-            return;
-        }
-        while (connectionManager.GetAsyncOngoing()) { 
-            // yield return null;
-        }
-        SceneManager.LoadScene((int)DisplayManager.Scenes.Lobby);        
-
+        }     
     }
 
 }

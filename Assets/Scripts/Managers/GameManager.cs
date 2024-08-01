@@ -73,6 +73,10 @@ public class GameManager : MonoBehaviour
             return RolesManager.Team.None;
         }
     }
+    public bool IsGameOver{
+        get { return TeamWon(RolesManager.Team.Olympus)
+                || TeamWon(RolesManager.Team.Tartarus);}
+    }
     public List<string> LastVotedOutList{
         get {return lastVotedOutList;}
     }
@@ -453,7 +457,7 @@ public class GameManager : MonoBehaviour
         MoveIndexForward();
 
         if ((moveIndex & endChancesMI) !=0){
-            if (IsOver()){
+            if (IsGameOver){
                 SceneManager.LoadScene((int)DisplayManager.Scenes.EndGame);
                 return;
             } else {
@@ -621,11 +625,6 @@ public class GameManager : MonoBehaviour
     //Methods associated with starting/ending the game 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     
-    private bool IsOver(){
-        return TeamWon(RolesManager.Team.Olympus)
-                || TeamWon(RolesManager.Team.Tartarus);
-    }
-
     private bool TeamWon(RolesManager.Team winningTeam){
         foreach(RolesManager.CardName card in playerCards.Values){
             RolesManager.Team team = roleInstances[card].Behaviour.Team;

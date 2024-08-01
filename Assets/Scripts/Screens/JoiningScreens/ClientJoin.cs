@@ -72,7 +72,7 @@ public class ClientJoin : MonoBehaviour
             await connectionManager.JoinLobbyByCode(playerName.text, gameCode.text);        
         }catch (Exception e){
             Debug.Log(e.ToString());
-            if (e.ToString()=="Player with that name already exists"){
+            if (e.Message=="Player with that name already exists"){
                 playerName.GetComponent<Image>().color = DisplayManager.ErrorColor;
             }
             else {

@@ -168,6 +168,7 @@ public class DisplayManager : MonoBehaviour
         b.GetComponent<Image>().color = ButtonColor;
         b.interactable=true;
     }
+    
     static public void GoToNextScene(Button b=null){
         try{
             PressButtonAndWait(b);
@@ -187,7 +188,8 @@ public class DisplayManager : MonoBehaviour
 
     static public void LeaveGame(Image background){
         background.color=new Color32(255,255,255,255);
-        FindObjectOfType<ConnectionManager>().LeaveRelay();
+        FindObjectOfType<ConnectionManager>().LeaveRelay(GameManager.Instance.playersIdsList[0]);
+        
         GameManager.Instance.ResetGame();
         SceneManager.LoadScene((int)Scenes.MainMenu);
     }

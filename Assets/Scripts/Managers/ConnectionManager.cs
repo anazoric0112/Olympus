@@ -32,7 +32,9 @@ public class ConnectionManager : NetworkBehaviour
     enum PreGamePhase{
         Lobby,  //0
         Select, //1
-        Game    //2
+        Game,   //2
+        Rejoin, //3
+        Idle,   //4
     }
 
     private const string lobbyName="OlimpGameLobby";
@@ -40,10 +42,13 @@ public class ConnectionManager : NetworkBehaviour
     private const string pre_game_phase = "#PreGamePhase";
     private const string key_table_cards = "#TableCards";
     private const string key_assigned_cards = "#AssignedCards";
+    private const string key_relay_host = "#RelayHost";
+    private const string key_old_host = "#OldHost";
+    private const string key_player_cnt = "#PlayersCnt";
     private const int lobbyMaxN=24;
     private const float heartbeatMaxTime=20;
     private float heartbeatTimer=20;
-    private const float reloadMaxTime=1;
+    private float reloadMaxTime=1;
     private float reloadTimer=1;
 
 
@@ -54,7 +59,24 @@ public class ConnectionManager : NetworkBehaviour
     private Player player;
     private bool asyncOngoing = false;
     private string current = PreGamePhase.Lobby.ToString();
+
     private string gameCode ="";
+    private bool migrationOnGoing = false;
+    private string relayHost = "";
+    private bool pauseReload = false;
+
+    public bool MigrationOngoing{
+        get {return migrationOnGoing;}
+    }
+    public string LobbyCode{
+        get {return lobby.LobbyCode;}
+    }
+    public string HostId{
+        get {return lobby.HostId;}
+    }
+    private bool IsLobbyHost{
+        get {return lobby.HostId==AuthenticationService.Instance.PlayerId;}
+    }
 
     void Awake()
     {
@@ -105,34 +127,49 @@ public class ConnectionManager : NetworkBehaviour
         reloadTimer-=Time.deltaTime;
         if (asyncOngoing) return;
 
-        if (reloadTimer<0f){
+        if (reloadTimer<0f && !pauseReload){
             reloadTimer=reloadMaxTime;
             
             try{
                 lobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
                 string phase = lobby.Data[pre_game_phase].Value;
+                Debug.Log(phase);
 
-                if (phase==PreGamePhase.Select.ToString() && current!=phase){
-                    current = phase;
-                    DisplayManager.ToSelect();
-                }
+                if (phase==PreGamePhase.Rejoin.ToString() && current!=phase){
 
-                if (phase==PreGamePhase.Game.ToString() && current!=phase){
+                    gameCode = lobby.Data[key_game_code].Value;
+                    relayHost = lobby.Data[key_relay_host].Value;
 
-                    if (!IsLobbyHost()){
-                        await JoinRelay(lobby.Data[key_game_code].Value);
-                        gameCode = lobby.Data[key_game_code].Value;
+                    if (relayHost!=GamePlayer.Instance.Id){
+                        await JoinRelay(gameCode);
+                        Debug.Log("3 Joined new relay");
                     }
-                    current = phase;
+                    current = PreGamePhase.Lobby.ToString();
+                    lobby = null;
+                    reloadMaxTime = 1;
+                    migrationOnGoing=false;
+                    Debug.Log("23 migration done");
+                    return;
+                } 
+                else if (phase==PreGamePhase.Select.ToString() && current!=phase){
+                    DisplayManager.ToSelect();
+                } 
+                else if (phase==PreGamePhase.Game.ToString() && current!=phase){
+
+                    gameCode = lobby.Data[key_game_code].Value;
+                    relayHost = lobby.Data[key_relay_host].Value;
+
+                    if (!IsLobbyHost) await JoinRelay(gameCode);
 
                     gameManager.FillPlayers(lobby.Players);
                     gameManager.FillPlayerRoles(lobby.Data[key_assigned_cards].Value);
                     gameManager.SetTableCards(lobby.Data[key_table_cards].Value);
 
                     lobby = null;
-                    
                     DisplayManager.ToGameStart();
                 }
+                
+                current = phase;
             }catch(LobbyServiceException e){
                 Debug.Log("Error: ConnectionManager.ReloadLobby() "+ e);
             }
@@ -159,7 +196,7 @@ public class ConnectionManager : NetworkBehaviour
 
             lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, opt);
 
-            Debug.Log("Created lobby "+lobby.Id + " " + lobby.LobbyCode +" by "+ GetHostId());
+            // Debug.Log("Created lobby "+lobby.Id + " " + lobby.LobbyCode +" by "+ HostId);
         } catch (LobbyServiceException e) {
             Debug.Log("Error: ConnectionManager.CreateLobby() "+ e);
             throw e;
@@ -168,7 +205,7 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
-    public async Task JoinLobbyByCode(string playerName, string gameCode){
+    public async Task JoinLobbyByCode(string playerName, string code){
         asyncOngoing=true;
 
         try {
@@ -181,7 +218,7 @@ public class ConnectionManager : NetworkBehaviour
                 Player = player
             };
             string gameCodeUpperCase = "";
-            foreach(char c in gameCode) gameCodeUpperCase+=Char.ToUpper(c);
+            foreach(char c in code) gameCodeUpperCase+=Char.ToUpper(c);
             lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(gameCodeUpperCase, opt);
 
             List<Player> ps = lobby.Players;
@@ -195,10 +232,10 @@ public class ConnectionManager : NetworkBehaviour
                 throw new Exception("Player with that name already exists");
             }
 
-            Debug.Log("Joined to "+lobby.Id+ " with code " +gameCode);
+            // Debug.Log("Joined to "+lobby.Id+ " with code " +gameCode);
         } catch (Exception e){
             Debug.Log("Error: ConnectionManager.JoinLobbyByCode() "+ e);
-            throw new Exception(e.ToString());
+            throw new Exception(e.Message);
         }
         asyncOngoing=false;
     }
@@ -213,7 +250,7 @@ public class ConnectionManager : NetworkBehaviour
             lobby = null;
             current = PreGamePhase.Lobby.ToString();
 
-            Debug.Log("Left lobby "+playerId);
+            // Debug.Log("Left lobby "+playerId);
         } catch (LobbyServiceException e){
             Debug.Log("Error: ConnectionManager.LeaveLobby() "+ e);
         }
@@ -233,6 +270,7 @@ public class ConnectionManager : NetworkBehaviour
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(data);
             NetworkManager.Singleton.StartHost();
+            relayHost = AuthenticationService.Instance.PlayerId;
         } catch (RelayServiceException e) {
             Debug.Log("Error: ConnectionManager.CreateRelay() "+ e);
         }
@@ -259,12 +297,15 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
-    public void LeaveRelay(){
-        NetworkManager.Singleton.Shutdown();
+    public async Task RejoinRelay(){
+        // Debug.Log("Rejoin called");
+        // await JoinRelay(gameCode, true);
+        // currently isnt solved
+        // Debug.Log("Rejoin done");
     }
     
     public async Task MoveToSelect(){
-        if (!IsLobbyHost() || lobby==null) return;
+        if (!IsLobbyHost || lobby==null) return;
         asyncOngoing=true;
 
         try{
@@ -285,16 +326,17 @@ public class ConnectionManager : NetworkBehaviour
 
     public async Task StartGame(List<Role> assignedRoles){
 
-        if (!IsLobbyHost() || lobby==null) return;
+        if (!IsLobbyHost || lobby==null) return;
         asyncOngoing=true;
 
         try{
             if (assignedRoles.Count==0) throw new Exception("No roles chosen");
-            string relayCode = await CreateRelay();
+            gameCode = await CreateRelay();
 
             Dictionary<string,DataObject> optData = new Dictionary<string, DataObject>{
-                {key_game_code, new DataObject(DataObject.VisibilityOptions.Member, relayCode)},
-                {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Game.ToString())}
+                {key_game_code, new DataObject(DataObject.VisibilityOptions.Member, gameCode)},
+                {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Game.ToString())},
+                {key_relay_host, new DataObject(DataObject.VisibilityOptions.Member, AuthenticationService.Instance.PlayerId)}
             };
 
             int roleIndex=0;
@@ -317,8 +359,8 @@ public class ConnectionManager : NetworkBehaviour
                     Data = optData
                 }
             );
-            Debug.Log("Relay started "+relayCode);
-            Debug.Log("Generated "+assignedCards+" "+tableCards);
+            // Debug.Log("Relay started "+relayCode);
+            // Debug.Log("Generated "+assignedCards+" "+tableCards);
         } catch (Exception e){
             Debug.Log("Error: ConnectionManager.StartGame() "+ e);
             throw e;
@@ -326,20 +368,94 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
-    public async Task RejoinRelay(){
-        await JoinRelay(gameCode);
+    public async void LeaveRelay(string newHost=""){
+        string myId = GamePlayer.Instance.Id;
+        
+        GameManager gm = GameManager.Instance;
+        int resultIndexes = gm.forCursedVoteResultMI | gm.forEldersVoteResultMI;
+
+        if (myId == relayHost && (gm.MoveIndex & resultIndexes)!=0){
+            CreateRejoinLobbyClientRpc(newHost, myId);
+        } else {
+            NetworkManager.Singleton.Shutdown();
+        }
     }
 
-    public string GetLobbyCode(){
-        return lobby.LobbyCode;
+    [ClientRpc(RequireOwnership = false)]
+    private void CreateRejoinLobbyClientRpc(string newhost, string oldhost){
+        migrationOnGoing = true;
+        if (GamePlayer.Instance.Id!=newhost) return;
+        CreateRejoinLobby(newhost,oldhost);
     }
 
-    public string GetHostId(){
-        return lobby.HostId;
+    private async Task CreateRejoinLobby(string newHost, string oldHost){
+        pauseReload=true;
+        int cnt = GameManager.Instance.playersIdsList.Count;
+        lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, new CreateLobbyOptions{
+            IsPrivate = false,
+            Player = new Player{
+                Data = new Dictionary<string, PlayerDataObject>{
+                    {"PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, GamePlayer.Instance.Name)}
+                }
+            },
+            Data = new Dictionary<string, DataObject>{
+                {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Idle.ToString())},
+                {key_old_host,new DataObject(DataObject.VisibilityOptions.Member, oldHost) },
+                {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, newHost) },
+                {key_player_cnt,new DataObject(DataObject.VisibilityOptions.Member, cnt.ToString()) }
+            }
+        });
+        Debug.Log("2 New lobby made");
+        RejoinGameServerRpc(lobby.LobbyCode,oldHost,newHost);
     }
 
-    public bool IsLobbyHost(){
-        return lobby.HostId==AuthenticationService.Instance.PlayerId;
+    [ServerRpc(RequireOwnership = false)]
+    private void RejoinGameServerRpc(string code, string oldHost, string newHost){
+        RejoinGameClientRpc(code, oldHost, newHost);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    private void RejoinGameClientRpc(string code, string oldHost, string newHost){
+        RejoinGame(code, oldHost, newHost);
+    }
+
+    private async Task RejoinGame(string lobbyCode, string oldHost, string newHost){
+        string myId = GamePlayer.Instance.Id;
+        NetworkManager.Singleton.Shutdown();
+        Debug.Log("1 left connection");
+
+        if (myId!=oldHost && myId!=newHost) {
+            reloadMaxTime = 2;
+            reloadTimer = 2;
+            await JoinLobbyByCode(GamePlayer.Instance.Name, lobbyCode);
+            Debug.Log("3 Joined new lobby");
+        }
+
+        if (myId==newHost){
+            gameCode = await CreateRelay();
+            Debug.Log("2 Created new relay");
+            try{
+                await UpdateRejoinCodeInLobby(gameCode);
+                Debug.Log("2 Updated relay code in lobby");
+            }catch(Exception e){
+                Debug.Log(e);
+            }
+            pauseReload = false;
+        }
+
+        if (myId==oldHost) migrationOnGoing = false;
+    }
+
+    private async Task UpdateRejoinCodeInLobby(string code){
+        Dictionary<string, DataObject> lobbyData = (await LobbyService.Instance.GetLobbyAsync(lobby.Id)).Data;
+        lobbyData[key_game_code] = new DataObject(DataObject.VisibilityOptions.Member, code);
+        lobbyData[pre_game_phase] = new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Rejoin.ToString());
+
+        lobby = await Lobbies.Instance.UpdateLobbyAsync(lobby.Id, 
+            new UpdateLobbyOptions{
+                Data = lobbyData
+            }
+        );
     }
 
     public List<Player> GetPlayers(){
@@ -350,7 +466,4 @@ public class ConnectionManager : NetworkBehaviour
         return asyncOngoing;
     }
 
-    public Player GetPlayer(){
-        return player;
-    }
 }

@@ -12,6 +12,9 @@ public class KeyboardManager : MonoBehaviour
     [SerializeField] Button uppercase;
     [SerializeField] Button submit;
 
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] float volume = 0.5f;
+
     [SerializeField] List<Sprite> upperSprites = new List<Sprite>();
     
     private TMP_InputField selectedInput = null;
@@ -32,6 +35,7 @@ public class KeyboardManager : MonoBehaviour
 
         foreach(Button b in letters){
             b.onClick.AddListener(()=>{
+                SoundEffect();
                 if (selectedInput==null) return;
                 selectedInput.text = selectedInput.text + b.GetComponentInChildren<TMP_Text>().text;
 
@@ -48,6 +52,7 @@ public class KeyboardManager : MonoBehaviour
         }
 
         uppercase.onClick.AddListener(()=>{
+            SoundEffect();
             NextCaseState();
             foreach(Button b in letters){
                 string letter = b.GetComponentInChildren<TMP_Text>().text;
@@ -61,11 +66,13 @@ public class KeyboardManager : MonoBehaviour
         });
 
         backspace.onClick.AddListener(()=>{
+            SoundEffect();
             string s = selectedInput.text;
             if (s!="") selectedInput.text = s.Remove(s.Length-1);
         });
 
         submit.onClick.AddListener(()=>{
+            SoundEffect();
             Hide();
         });
 
@@ -99,5 +106,9 @@ public class KeyboardManager : MonoBehaviour
                 break;
         }
         uppercase.GetComponent<Image>().sprite = upperSprites[(int)caseState];
+    }
+
+    private void SoundEffect(){
+        audioSource.PlayOneShot(audioSource.clip, volume);
     }
 }

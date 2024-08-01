@@ -106,10 +106,20 @@ public class VotingResult : MonoBehaviour
 
     void Update()
     {
-        if (TimerManager.Instance.IsRunOut() && !runOut && WiFiManager.IsConnected()){
+        bool migrationOngoing = FindObjectOfType<ConnectionManager>().MigrationOngoing;
+        if (nextButton.interactable && migrationOngoing) nextButton.interactable=false;
+        else if (!nextButton.interactable && !migrationOngoing) StartCoroutine(EnableNext());
+
+        if (TimerManager.Instance.IsRunOut() && !runOut && WiFiManager.IsConnected() 
+            && nextButton.interactable){
             runOut=true;
             DisplayManager.GoToNextScene();
         }
+    }
+
+    private IEnumerator EnableNext(){
+        yield return new WaitForSeconds(3f);
+        nextButton.interactable=true;
     }
 
     private bool ShowCard(RolesManager.CardName card, bool isOut){

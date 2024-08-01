@@ -83,7 +83,7 @@ public class SelectRoles : MonoBehaviour
     private void UpdateInteractables(){
         if (!WiFiManager.IsConnected() || leaving) return;
         
-        bool isHost = myPlayerId==connectionManager.GetHostId();
+        bool isHost = myPlayerId==connectionManager.HostId;
         startGame.interactable = isHost;
         foreach(Toggle b in checkButtons)
             b.interactable = isHost;

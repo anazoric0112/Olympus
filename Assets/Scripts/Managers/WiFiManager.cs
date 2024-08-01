@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ public class WiFiManager : MonoBehaviour
     List<Selectable> interactables = new List<Selectable>();
     List<Selectable> toEnable = new List<Selectable>();
     private bool wasConnected = true;
+    private bool nowConnected = true;
+    private bool rejoining = false;
     private GameObject modal = null;
 
     void Start()
@@ -17,18 +20,28 @@ public class WiFiManager : MonoBehaviour
         
     }
 
-    void Update()
+    async void Update()
     {
-        bool nowConnected=Application.internetReachability != NetworkReachability.NotReachable;
+        if (rejoining) return;
+
+        nowConnected=Application.internetReachability != NetworkReachability.NotReachable;
         
         if(!nowConnected && wasConnected){
             DisableEnabled();
             modal = InstantiateToCanvas(wifiErrorModalPrefab);
+
+            //ako je host mora da se migrira host
+
         } else if (nowConnected && !wasConnected) {
+            rejoining = true;
+            
+            await FindObjectOfType<ConnectionManager>().RejoinRelay();
+            Thread.Sleep(2000);
             EnableBack();
             Destroy(modal);
             modal = null;
-            FindObjectOfType<ConnectionManager>().RejoinRelay();
+
+            rejoining = false;
         }
         wasConnected = nowConnected;
     }
@@ -42,7 +55,8 @@ public class WiFiManager : MonoBehaviour
     }
 
     static public bool IsConnected(){
-        return Application.internetReachability != NetworkReachability.NotReachable;
+        // return Application.internetReachability != NetworkReachability.NotReachable;
+        return FindObjectOfType<WiFiManager>().wasConnected;
     }
 
     private void DisableEnabled(){

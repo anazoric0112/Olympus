@@ -61,7 +61,7 @@ public class GameLobby : MonoBehaviour
 
     void Start()
     {   
-        joinCodeText.text = connectionManager.GetLobbyCode();
+        joinCodeText.text = connectionManager.LobbyCode;
 
         WiFiManager wiFiManager = FindObjectOfType<WiFiManager>();
         wiFiManager.AddToInteractables(backButton);
@@ -81,7 +81,7 @@ public class GameLobby : MonoBehaviour
     private void UpdateInteractables(){
         if (!WiFiManager.IsConnected() || leaving) return;
         
-        nextButton.interactable =  AuthenticationService.Instance.PlayerId==connectionManager.GetHostId();
+        nextButton.interactable =  AuthenticationService.Instance.PlayerId==connectionManager.HostId;
     }
 
 }

@@ -17,7 +17,6 @@ public class ClientJoin : MonoBehaviour
 
 
     private ConnectionManager connectionManager;
-    private TMP_InputField selectedInput = null;
     
     void Awake(){
         connectionManager = FindObjectOfType<ConnectionManager>();

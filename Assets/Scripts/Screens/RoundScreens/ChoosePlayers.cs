@@ -24,7 +24,7 @@ public class ChoosePlayers : MonoBehaviour
 
     void Start()
     {
-        RolesManager.CardName myCard = GamePlayer.Instance.Role.GetCardName();
+        RolesManager.CardName myCard = GamePlayer.Instance.Role.CardName;
         if (myCard==RolesManager.CardName.Dryad || myCard==RolesManager.CardName.Dracaena) TimerManager.Instance.StartRoleDisplay();
         else TimerManager.Instance.StartMove();
         
@@ -62,7 +62,7 @@ public class ChoosePlayers : MonoBehaviour
     private void FillNames(){
         int playersCnt = 0;
 
-        if (GamePlayer.Instance.Role.GetCardName()==RolesManager.CardName.Pandora) selectable=2;
+        if (GamePlayer.Instance.Role.CardName==RolesManager.CardName.Pandora) selectable=2;
 
         foreach(KeyValuePair<string,string> kp in GameManager.Instance.playerNames){
             string id = kp.Key, name = kp.Value;
@@ -128,7 +128,7 @@ public class ChoosePlayers : MonoBehaviour
         if (selectable==2) rb.DoActive(GetName(selectedPlayers[0]), GetName(selectedPlayers[1]));
         else rb.DoActive(GetName(selectedPlayers[0]));
 
-        if (rb.RevealMyCard){
+        if (rb.RevealNewCard){
             TimerManager.Instance.SaveTime();
             SceneManager.LoadScene((int)DisplayManager.Scenes.NewRoleDisplay);
         }

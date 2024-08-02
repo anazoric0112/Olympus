@@ -24,7 +24,7 @@ public class ArtemisBehaviour : RoleBehaviour
                 RolesManager.CardName card = GameManager.Instance.playerCards[id];
                 Role role = GameManager.Instance.roleInstances[card];
                 string name = GameManager.Instance.playerNames[id];
-                cardsToReveal.Add(new RevealingCard(role.GetImage(), name));
+                cardsToReveal.Add(new RevealingCard(role.Image, name));
             }
 
             SceneManager.LoadScene((int)DisplayManager.Scenes.CardsPeek);

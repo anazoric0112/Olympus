@@ -90,7 +90,7 @@ public class SelectRoles : MonoBehaviour
 
     private void ToggleValue(Role role){
         foreach(Role r in selectedRoles){
-            if(r.GetName() == role.GetName()){
+            if(r.Name == role.Name){
                 selectedRoles.Remove(r);
                 return;
             }
@@ -99,8 +99,8 @@ public class SelectRoles : MonoBehaviour
     }
 
     private void SetDescription(Role role){
-        descText.text=role.GetDescription();
-        descTitle.text=role.GetName();
+        descText.text=role.Description;
+        descTitle.text=role.Name;
         descModal.SetActive(true);
     }
 
@@ -116,7 +116,7 @@ public class SelectRoles : MonoBehaviour
             l[rng2]=temp;
         }
 
-        int pCnt = connectionManager.GetPlayers().Count;
+        int pCnt = connectionManager.Players.Count;
         bool e=false, t=false;
 
         for(int i=0;i<pCnt;i++){
@@ -124,7 +124,7 @@ public class SelectRoles : MonoBehaviour
             if (l[i].Behaviour.CardClass==RolesManager.CardClass.Cursed) t=true;
         }
 
-        if (e!=t){ //samo jedan treba da se zameni
+        if (e!=t){ //only one needs to be swapped
             int rng = UnityEngine.Random.Range(0,pCnt);
             RolesManager.CardClass toFind = e ? RolesManager.CardClass.Cursed:RolesManager.CardClass.Elder;
 
@@ -136,7 +136,7 @@ public class SelectRoles : MonoBehaviour
                 l[rng]=temp;
                 break;
             }
-        } else if (e==false && t==false){ //oba treba da se zamene
+        } else if (e==false && t==false){ //both need to be swapped
             int rngt = UnityEngine.Random.Range(0,pCnt);
             int rnge = UnityEngine.Random.Range(0,pCnt);
 
@@ -164,7 +164,7 @@ public class SelectRoles : MonoBehaviour
 
     private bool CheckSelection(List<Role> roles){
 
-        int pCnt = connectionManager.GetPlayers().Count;
+        int pCnt = connectionManager.Players.Count;
         int t=0, e=0, o=0;
         int table = roles.Count-pCnt;
         List<RolesManager.CardName> selected = new List<RolesManager.CardName>();
@@ -172,7 +172,7 @@ public class SelectRoles : MonoBehaviour
         if (roles.Count<pCnt) throw new Exception("You selected fewer cards than there are players in game.");
         
         foreach(Role r in roles){
-            selected.Add(r.GetCardName());
+            selected.Add(r.CardName);
             if (r.Behaviour.CardClass==RolesManager.CardClass.Cursed) t++;
             if (r.Behaviour.CardClass==RolesManager.CardClass.Elder) e++;
             if (r.Behaviour.Team==RolesManager.Team.Olympus) o++;
@@ -197,7 +197,7 @@ public class SelectRoles : MonoBehaviour
     }
 
     private void FillCards(){
-        List<Role> roles = rolesManager.GetAllRoles();
+        List<Role> roles = rolesManager.AllRoles;
         int rowNumber = roles.Count/2 + roles.Count%2;
 
         GameObject group = DisplayManager.InstantiateWithParent(cardGroupPrefab, scrollableCards);
@@ -206,7 +206,7 @@ public class SelectRoles : MonoBehaviour
 
         foreach (Role role in roles){
             GameObject roleCard = DisplayManager.InstantiateWithParent(roleCardPrefab, group);
-            roleCard.GetComponentInChildren<Image>().sprite = role.GetImage();
+            roleCard.GetComponentInChildren<Image>().sprite = role.Image;
 
             Toggle checkbox = roleCard.GetComponentInChildren<Image>().GetComponentInChildren<Toggle>();
             checkbox.onValueChanged.AddListener(delegate {

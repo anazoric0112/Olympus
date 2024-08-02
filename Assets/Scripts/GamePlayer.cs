@@ -7,16 +7,13 @@ using UnityEngine;
 
 public class GamePlayer : NetworkBehaviour
 {
+    //-------Fields-------
     private Role role;
     private Role nextRole;
     private Role fallbackRole=null;
     private Player playerObject;
 
-    static GamePlayer instance;
-
-    static public GamePlayer Instance {
-        get { return instance; }
-    }
+    //-------Properties-------
     public Role Role{
         get {return role;}
         set {role=value;}
@@ -31,6 +28,7 @@ public class GamePlayer : NetworkBehaviour
         get{return fallbackRole;}
         set {fallbackRole=value;}
     }
+    
     public string Name{
         get {
             if (playerObject==null) return "";
@@ -44,7 +42,14 @@ public class GamePlayer : NetworkBehaviour
             return playerObject.Id;
         }
     }
+ 
+    //-------For singleton-------
+    static GamePlayer instance;
 
+    static public GamePlayer Instance {
+        get { return instance; }
+    }
+    
     void Awake(){
         if (instance){
             gameObject.SetActive(false);
@@ -54,13 +59,17 @@ public class GamePlayer : NetworkBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-    
+
+    //------------------------------------------------------------
+    //Helper methods
+    //------------------------------------------------------------
+
     public void SetPlayerObject(Player po){
         playerObject = po;
     }
 
     public string GamePlayerString(){
-        return "Role: "+Role.GetName()+"; \nNext role: "+NextRole.GetName()+"; \nName: "+Name+"; \nId: "+Id;
+        return "Role: "+Role.Name+"; \nNext role: "+NextRole.Name+"; \nName: "+Name+"; \nId: "+Id;
     }
 
 }

@@ -256,7 +256,7 @@ public class GameManager : MonoBehaviour
 
         TakeFromTable(card,false);
 
-        playerCards[player]=newrole.GetCardName();
+        playerCards[player]=newrole.CardName;
         fallbackRoles[player]=RolesManager.CardName.Phoenix;
     }
     
@@ -300,15 +300,15 @@ public class GameManager : MonoBehaviour
         List<RolesManager.CardName> isSelected = new List<RolesManager.CardName>();
 
         foreach(Role r in tableCards) {
-            isSelected.Add(r.GetCardName());
+            isSelected.Add(r.CardName);
         }
         foreach(RolesManager.CardName card in playerCards.Values){
             isSelected.Add(card);
         }
 
         RolesManager rolesManager = FindObjectOfType<RolesManager>();
-        foreach(Role role in rolesManager.GetAllRoles()){
-            if (isSelected.Contains(role.GetCardName())) ret.Add(role);
+        foreach(Role role in rolesManager.AllRoles){
+            if (isSelected.Contains(role.CardName)) ret.Add(role);
         }
 
         return ret;
@@ -329,7 +329,7 @@ public class GameManager : MonoBehaviour
     public string GetRandomTableCard(){
         if (tableCards.Count==0) return "";
         int rng = UnityEngine.Random.Range(0,tableCards.Count);
-        return tableCards[rng].GetName();
+        return tableCards[rng].Name;
     }
 
     public string FindPlayerByCard(RolesManager.CardName card){
@@ -606,12 +606,12 @@ public class GameManager : MonoBehaviour
         if (p.FallbackRole!=null) {
             //phoenix edgecase
             p.Role = p.FallbackRole;
-            if (p.FallbackRole.GetCardName()==RolesManager.CardName.Phoenix) {
+            if (p.FallbackRole.CardName==RolesManager.CardName.Phoenix) {
                 //samo ako je feniks u pitanju, njegova karta treba da se odbaci na sto
-                RPCsManager.Instance.TakeFromTableServerRpc(p.NextRole.GetName(),true); 
+                RPCsManager.Instance.TakeFromTableServerRpc(p.NextRole.Name,true); 
             }
             p.NextRole=p.FallbackRole;
-            playerCards[p.Id]=p.Role.GetCardName();
+            playerCards[p.Id]=p.Role.CardName;
         }
         else p.Role=p.NextRole;
 
@@ -640,33 +640,33 @@ public class GameManager : MonoBehaviour
 
     private void InstantiateRoleBehaviours(){
         RolesManager rolesManager = FindObjectOfType<RolesManager>();
-        foreach (Role r in rolesManager.GetAllRoles()){
-            roleInstances[r.GetCardName()]=r;
+        foreach (Role r in rolesManager.AllRoles){
+            roleInstances[r.CardName]=r;
         }
-        roleInstances[RolesManager.CardName.Athena].SetRoleBehaviour(new AthenaBehaviour());
-        roleInstances[RolesManager.CardName.Zeus].SetRoleBehaviour(new ZeusBehaviour());
-        roleInstances[RolesManager.CardName.Aphrodite].SetRoleBehaviour(new AphroditeBehaviour());
-        roleInstances[RolesManager.CardName.Dionysis].SetRoleBehaviour(new DionysisBehaviour());
-        roleInstances[RolesManager.CardName.Cassandra].SetRoleBehaviour(new CassandraBehaviour());
-        roleInstances[RolesManager.CardName.Dracaena].SetRoleBehaviour(new DracaenaBehaviour());
-        roleInstances[RolesManager.CardName.Dryad].SetRoleBehaviour(new DryadBehaviour());
-        roleInstances[RolesManager.CardName.Pandora].SetRoleBehaviour(new PandoraBehaviour());
-        roleInstances[RolesManager.CardName.Pegasus].SetRoleBehaviour(new PegasusBehaviour());
-        roleInstances[RolesManager.CardName.Phoenix].SetRoleBehaviour(new PhoenixBehaviour());
-        roleInstances[RolesManager.CardName.Apollo].SetRoleBehaviour(new ApolloBehaviour());
-        roleInstances[RolesManager.CardName.Artemis].SetRoleBehaviour(new ArtemisBehaviour());
-        roleInstances[RolesManager.CardName.Perseus].SetRoleBehaviour(new PerseusBehaviour());
-        roleInstances[RolesManager.CardName.Basilisk].SetRoleBehaviour(new BasiliskBehaviour());
-        roleInstances[RolesManager.CardName.Achilles].SetRoleBehaviour(new AchillesBehaviour());
-        roleInstances[RolesManager.CardName.Nyx].SetRoleBehaviour(new NyxBehaviour());
-        roleInstances[RolesManager.CardName.Hemera].SetRoleBehaviour(new HemeraBehaviour());
-        roleInstances[RolesManager.CardName.Sisyphus].SetRoleBehaviour(new SisyphusBehaviour());
-        roleInstances[RolesManager.CardName.Orpheus].SetRoleBehaviour(new OrpheusBehaviour());
-        roleInstances[RolesManager.CardName.Medusa].SetRoleBehaviour(new MedusaBehaviour());
-        roleInstances[RolesManager.CardName.Siren].SetRoleBehaviour(new SirenBehaviour());
-        roleInstances[RolesManager.CardName.Hydra].SetRoleBehaviour(new HydraBehaviour());
-        roleInstances[RolesManager.CardName.Charon].SetRoleBehaviour(new CharonBehaviour());
-        roleInstances[RolesManager.CardName.Hades].SetRoleBehaviour(new HadesBehaviour());
+        roleInstances[RolesManager.CardName.Athena].Behaviour = new AthenaBehaviour();
+        roleInstances[RolesManager.CardName.Zeus].Behaviour = new ZeusBehaviour();
+        roleInstances[RolesManager.CardName.Aphrodite].Behaviour = new AphroditeBehaviour();
+        roleInstances[RolesManager.CardName.Dionysis].Behaviour = new DionysisBehaviour();
+        roleInstances[RolesManager.CardName.Cassandra].Behaviour = new CassandraBehaviour();
+        roleInstances[RolesManager.CardName.Dracaena].Behaviour = new DracaenaBehaviour();
+        roleInstances[RolesManager.CardName.Dryad].Behaviour = new DryadBehaviour();
+        roleInstances[RolesManager.CardName.Pandora].Behaviour = new PandoraBehaviour();
+        roleInstances[RolesManager.CardName.Pegasus].Behaviour = new PegasusBehaviour();
+        roleInstances[RolesManager.CardName.Phoenix].Behaviour = new PhoenixBehaviour();
+        roleInstances[RolesManager.CardName.Apollo].Behaviour = new ApolloBehaviour();
+        roleInstances[RolesManager.CardName.Artemis].Behaviour = new ArtemisBehaviour();
+        roleInstances[RolesManager.CardName.Perseus].Behaviour = new PerseusBehaviour();
+        roleInstances[RolesManager.CardName.Basilisk].Behaviour = new BasiliskBehaviour();
+        roleInstances[RolesManager.CardName.Achilles].Behaviour = new AchillesBehaviour();
+        roleInstances[RolesManager.CardName.Nyx].Behaviour = new NyxBehaviour();
+        roleInstances[RolesManager.CardName.Hemera].Behaviour = new HemeraBehaviour();
+        roleInstances[RolesManager.CardName.Sisyphus].Behaviour = new SisyphusBehaviour();
+        roleInstances[RolesManager.CardName.Orpheus].Behaviour = new OrpheusBehaviour();
+        roleInstances[RolesManager.CardName.Medusa].Behaviour = new MedusaBehaviour();
+        roleInstances[RolesManager.CardName.Siren].Behaviour = new SirenBehaviour();
+        roleInstances[RolesManager.CardName.Hydra].Behaviour = new HydraBehaviour();
+        roleInstances[RolesManager.CardName.Charon].Behaviour = new CharonBehaviour();
+        roleInstances[RolesManager.CardName.Hades].Behaviour = new HadesBehaviour();
 
         foreach(Role r in roleInstances.Values){
             if (r.Behaviour.Team==RolesManager.Team.Tartarus) {
@@ -713,7 +713,7 @@ public class GameManager : MonoBehaviour
         }
         string table="";
         foreach(Role r in tableCards){
-            table+=r.GetName()+" ";
+            table+=r.Name+" ";
         }
 
         printstr+="\nCards on the table: "+table;

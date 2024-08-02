@@ -19,24 +19,14 @@ using Unity.VisualScripting;
 
 public class ConnectionManager : NetworkBehaviour
 {
-    public class WrongGameCodeException : Exception {
-        public WrongGameCodeException(){}
-
-        public WrongGameCodeException(string message)
-            : base(message){}
-
-        public WrongGameCodeException(string message, Exception inner)
-            : base(message, inner){}
-    }
-
     enum PreGamePhase{
-        Lobby,  //0
-        Select, //1
-        Game,   //2
-        Rejoin, //3
-        Idle,   //4
+        Lobby,  //0 - serves as Idle state too
+        Select, //1 - selecting cards
+        Game,   //2 - in game
+        Rejoin, //3 - migrating relay host
     }
 
+    //-------Data dictionary keys-------
     private const string lobbyName="OlimpGameLobby";
     private const string key_game_code = "#KeyGameCode";
     private const string pre_game_phase = "#PreGamePhase";
@@ -45,13 +35,15 @@ public class ConnectionManager : NetworkBehaviour
     private const string key_relay_host = "#RelayHost";
     private const string key_old_host = "#OldHost";
     private const string key_player_cnt = "#PlayersCnt";
+
+    //-------Lobby properties-------
     private const int lobbyMaxN=24;
     private const float heartbeatMaxTime=20;
     private float heartbeatTimer=20;
     private float reloadMaxTime=1;
     private float reloadTimer=1;
 
-
+    //-------fields-------
     static ConnectionManager instance;
     private GameManager gameManager=null;
     private Lobby lobby=null;
@@ -59,12 +51,12 @@ public class ConnectionManager : NetworkBehaviour
     private Player player;
     private bool asyncOngoing = false;
     private string current = PreGamePhase.Lobby.ToString();
-
     private string gameCode ="";
     private bool migrationOnGoing = false;
     private string relayHost = "";
     private bool pauseReload = false;
 
+    //-------properties-------
     public bool MigrationOngoing{
         get {return migrationOnGoing;}
     }
@@ -77,7 +69,11 @@ public class ConnectionManager : NetworkBehaviour
     private bool IsLobbyHost{
         get {return lobby.HostId==AuthenticationService.Instance.PlayerId;}
     }
+    public List<Player> Players{
+        get {return lobby.Players;}
+    }
 
+    //-------Unity methods-------
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
@@ -111,6 +107,10 @@ public class ConnectionManager : NetworkBehaviour
         HeartbeatLobby();
         ReloadLobby();
     }
+
+    //------------------------------------------------------------
+    //Methods for Lobby manipulation
+    //------------------------------------------------------------
 
     private async void HeartbeatLobby(){
         if (lobby==null) return;
@@ -250,6 +250,10 @@ public class ConnectionManager : NetworkBehaviour
 
         asyncOngoing=false;
     }
+    
+    //------------------------------------------------------------
+    //Methods for Relay manipulation
+    //------------------------------------------------------------
 
     private async Task<string> CreateRelay(){
         asyncOngoing=true;
@@ -290,10 +294,27 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
+    public async void LeaveRelay(string newHost=""){
+        string myId = GamePlayer.Instance.Id;
+        
+        GameManager gm = GameManager.Instance;
+        int resultIndexes = gm.forCursedVoteResultMI | gm.forEldersVoteResultMI;
+
+        if (myId == relayHost && (gm.MoveIndex & resultIndexes)!=0){
+            CreateRejoinLobbyClientRpc(newHost, myId);
+        } else {
+            NetworkManager.Singleton.Shutdown();
+        }
+    }
+
     public async Task RejoinRelay(){
         // currently isnt solved ### to be done
     }
-    
+        
+    //------------------------------------------------------------
+    //Methods for moving through pregame phases
+    //------------------------------------------------------------
+
     public async Task MoveToSelect(){
         if (!IsLobbyHost || lobby==null) return;
         asyncOngoing=true;
@@ -335,11 +356,11 @@ public class ConnectionManager : NetworkBehaviour
 
             foreach(Player p in lobby.Players){
                 if (assignedCards!="") assignedCards+="#";
-                assignedCards+=p.Id+":"+assignedRoles[roleIndex++].GetName();
+                assignedCards+=p.Id+":"+assignedRoles[roleIndex++].Name;
             }
             while (roleIndex<assignedRoles.Count){
                 if (tableCards!="") tableCards+="#";
-                tableCards+=assignedRoles[roleIndex++].GetName();
+                tableCards+=assignedRoles[roleIndex++].Name;
             }
             optData[key_table_cards]=new DataObject(DataObject.VisibilityOptions.Member, tableCards);
             optData[key_assigned_cards]=new DataObject(DataObject.VisibilityOptions.Member, assignedCards);
@@ -355,19 +376,10 @@ public class ConnectionManager : NetworkBehaviour
         }
         asyncOngoing=false;
     }
-
-    public async void LeaveRelay(string newHost=""){
-        string myId = GamePlayer.Instance.Id;
         
-        GameManager gm = GameManager.Instance;
-        int resultIndexes = gm.forCursedVoteResultMI | gm.forEldersVoteResultMI;
-
-        if (myId == relayHost && (gm.MoveIndex & resultIndexes)!=0){
-            CreateRejoinLobbyClientRpc(newHost, myId);
-        } else {
-            NetworkManager.Singleton.Shutdown();
-        }
-    }
+    //------------------------------------------------------------
+    //Methods for migrating relay host
+    //------------------------------------------------------------
 
     [ClientRpc(RequireOwnership = false)]
     private void CreateRejoinLobbyClientRpc(string newhost, string oldhost){
@@ -388,7 +400,7 @@ public class ConnectionManager : NetworkBehaviour
                     }
                 },
                 Data = new Dictionary<string, DataObject>{
-                    {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Idle.ToString())},
+                    {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Lobby.ToString())},
                     {key_old_host,new DataObject(DataObject.VisibilityOptions.Member, oldHost) },
                     {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, newHost) },
                     {key_player_cnt,new DataObject(DataObject.VisibilityOptions.Member, cnt.ToString()) }
@@ -453,14 +465,6 @@ public class ConnectionManager : NetworkBehaviour
         }catch (LobbyServiceException e){
             Debug.Log("Error: ConnectionManager.UpdateRejoinCodeInLobby(): "+e);
         }
-    }
-
-    public List<Player> GetPlayers(){
-        return lobby.Players;
-    }
-
-    public bool GetAsyncOngoing(){
-        return asyncOngoing;
     }
 
 }

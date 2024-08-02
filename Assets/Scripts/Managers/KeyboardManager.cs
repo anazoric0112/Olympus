@@ -6,21 +6,26 @@ using UnityEngine.UI;
 
 public class KeyboardManager : MonoBehaviour
 {
-
+    //-------Keyboard and tasters-------
     [SerializeField] GameObject keyboard;
     [SerializeField] Button backspace;
     [SerializeField] Button uppercase;
     [SerializeField] Button submit;
 
+    //-------Click sound-------
     [SerializeField] AudioSource audioSource;
     [SerializeField] float volume = 0.5f;
 
+    //-------Fields-------
     [SerializeField] List<Sprite> upperSprites = new List<Sprite>();
-    
     private TMP_InputField selectedInput = null;
     private List<Button> letters=new List<Button>();
     private CaseState caseState = CaseState.Lower;
 
+    //------------------------------------------------------------
+    //Code for realization of typing
+    //------------------------------------------------------------
+    
     private enum CaseState{
         Lower,
         UpperOnce,
@@ -29,6 +34,10 @@ public class KeyboardManager : MonoBehaviour
 
     void Awake()
     {
+        InitializeKeyboard();
+    }
+
+    private void InitializeKeyboard(){
         foreach(Button b in keyboard.GetComponentsInChildren<Button>()){
             if (b.GetComponentInChildren<TMP_Text>().text!="") letters.Add(b);
         }
@@ -79,20 +88,6 @@ public class KeyboardManager : MonoBehaviour
         Hide();
     }
     
-    public void SelectInput(TMP_InputField inp){
-        selectedInput = inp;
-        Show();
-    }
-
-    private void Hide(){
-        keyboard.gameObject.transform.localScale = new Vector3(0, 0, 0);
-        selectedInput=null;
-    }
-
-    private void Show(){
-        keyboard.gameObject.transform.localScale = new Vector3(1, 1, 1);
-    }
-
     private void NextCaseState(){
         switch(caseState){
             case CaseState.Lower:
@@ -106,6 +101,24 @@ public class KeyboardManager : MonoBehaviour
                 break;
         }
         uppercase.GetComponent<Image>().sprite = upperSprites[(int)caseState];
+    }
+
+    //------------------------------------------------------------
+    //Methods for graphic and audio manipulation
+    //------------------------------------------------------------
+    
+    public void SelectInput(TMP_InputField inp){
+        selectedInput = inp;
+        Show();
+    }
+
+    private void Hide(){
+        keyboard.gameObject.transform.localScale = new Vector3(0, 0, 0);
+        selectedInput=null;
+    }
+
+    private void Show(){
+        keyboard.gameObject.transform.localScale = new Vector3(1, 1, 1);
     }
 
     private void SoundEffect(){

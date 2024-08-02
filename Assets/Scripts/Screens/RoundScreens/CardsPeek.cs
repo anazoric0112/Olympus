@@ -30,7 +30,7 @@ public class CardsPeek : MonoBehaviour
         wiFiManager.AddToInteractables(nextButton);
 
         RoleBehaviour roleBehaviour = GamePlayer.Instance.Role.Behaviour;
-        List<RoleBehaviour.RevealingCard> cards = roleBehaviour.GetReveals();
+        List<RoleBehaviour.RevealingCard> cards = roleBehaviour.RevealingCards;
         instruction.text=roleBehaviour.MoveInst;
 
         if (cards.Count==0){

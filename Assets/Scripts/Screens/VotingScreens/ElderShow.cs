@@ -21,7 +21,7 @@ public class ElderShow : MonoBehaviour
         
         string id = GameManager.Instance.NextElderShow;
         RolesManager.CardName card = GameManager.Instance.playerCards[id];
-        cardImage.sprite = GameManager.Instance.roleInstances[card].GetImage();
+        cardImage.sprite = GameManager.Instance.roleInstances[card].Image;
         nameText.text = GameManager.Instance.playerNames[id];
 
         nextButton.onClick.AddListener(()=>{

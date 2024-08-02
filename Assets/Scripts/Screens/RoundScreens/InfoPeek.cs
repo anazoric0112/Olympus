@@ -59,11 +59,11 @@ public class InfoPeek : MonoBehaviour
 
     private void FillCards(){
         Role r = GamePlayer.Instance.Role;
-        revealingCards=r.Behaviour.GetReveals();
+        revealingCards=r.Behaviour.RevealingCards;
         GameObject prefab = playerCardPrefab;
         int cardsCnt=0;
 
-        if(r.GetCardName()==RolesManager.CardName.Cassandra){
+        if(r.CardName==RolesManager.CardName.Cassandra){
             prefab=tableCardPrefab;
             selectable = GameManager.Instance.TableCardsCnt<5 ? 1:2;
         }        

@@ -30,7 +30,7 @@ public class GameLobby : MonoBehaviour
             backButton.interactable=false;
             DisplayManager.PressButtonAndWait(nextButton);
             try{
-                int pCnt = connectionManager.GetPlayers().Count;
+                int pCnt = connectionManager.Players.Count;
                 // if (pCnt<4) throw new Exception("You need at least 4 players to play."); //### uncomment for final version
                 if (pCnt>20) throw  new Exception("You exceeded maximum number of players (20).");
 

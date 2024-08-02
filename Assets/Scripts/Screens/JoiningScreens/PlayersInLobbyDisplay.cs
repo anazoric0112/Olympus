@@ -48,8 +48,9 @@ public class PlayersInLobbyDisplay : MonoBehaviour
         playersDisplayed.Add(newPlayer);
         playersIds.Add(id);
     }
+    
     public void AddPlayers(){
-        List<Player> playersIn = connectionManager.GetPlayers();
+        List<Player> playersIn = connectionManager.Players;
         foreach(Player p in playersIn){
             AddPlayer(p.Data["PlayerName"].Value, p.Id);
         }

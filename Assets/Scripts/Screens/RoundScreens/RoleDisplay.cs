@@ -23,8 +23,6 @@ public class RoleDisplay : MonoBehaviour
 
     private bool showed = false;
     private bool runOut = false;
-    // private bool initialOver = false;
-    // private float initialTimer = 10;
     private Sprite roleImage;
 
     void Start()
@@ -36,12 +34,12 @@ public class RoleDisplay : MonoBehaviour
         wiFiManager.AddToInteractables(nextButton);
         
         Role role = GamePlayer.Instance.Role;
-        string roleTitle = role.GetName();
-        string roleDesc = role.GetDescription();
-        roleImage = role.GetImage();
+        string roleTitle = role.Name;
+        string roleDesc = role.Description;
+        roleImage = role.Image;
 
-        if (role.GetCardName()==RolesManager.CardName.Nyx 
-            || role.GetCardName()==RolesManager.CardName.Hemera) {
+        if (role.CardName==RolesManager.CardName.Nyx 
+            || role.CardName==RolesManager.CardName.Hemera) {
                 roleImage = nyxHemeraImage;
                 roleTitle="Nyx & Hemera";
                 roleDesc = "You don't know whether you are Nyx or Hemera. At the beginning of a round, they both see info that someone is Tartarus member, but Hemera's info is true and Nyx's is false.";

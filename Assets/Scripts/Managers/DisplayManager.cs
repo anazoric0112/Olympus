@@ -32,7 +32,7 @@ public class DisplayManager : MonoBehaviour
         ElderShow,          //18
     }
 
-    private const int scenesCount = 19;
+    //-------Colors-------
     [SerializeField] public Color32 errorColor = new Color32(0,0,0,0);
     [SerializeField] public Color32 inputColor = new Color32(0,0,0,0);
     [SerializeField] public Color32 pressedButtonColor = new Color32(0,0,0,0);
@@ -42,10 +42,12 @@ public class DisplayManager : MonoBehaviour
     [SerializeField] public Color32 winColor = new Color(0,0,0,0);
     [SerializeField] public Color32 lossColor = new Color(0,0,0,0);
 
+    //-------Sprites-------
     [SerializeField] public Sprite cardBack;
     [SerializeField] public Sprite questionBack;
     [SerializeField] public Sprite questionBackNonClickable;
 
+    //-------Properties-------
     static public Color32 ErrorColor{
         get {return FindObjectOfType<DisplayManager>().errorColor;}
     }
@@ -80,6 +82,10 @@ public class DisplayManager : MonoBehaviour
         get {return FindObjectOfType<DisplayManager>().questionBackNonClickable;}
     }
     static private List<RotatingCard> currentRotates = new List<RotatingCard>();
+    
+    //------------------------------------------------------------
+    //Code for rotating cards
+    //------------------------------------------------------------
 
     class RotatingCard{
         Sprite sprite;
@@ -142,6 +148,18 @@ public class DisplayManager : MonoBehaviour
 
     }
 
+    static public bool RotateCard(GameObject card, Image image, Sprite sprite){
+        foreach(RotatingCard c in currentRotates){
+            if (c.Hash==card.GetHashCode()) return false;
+        }
+        currentRotates.Add(new RotatingCard(card, sprite, image));
+        return true;
+    }
+
+    //------------------------------------------------------------
+    //Methods for moving between scenes
+    //------------------------------------------------------------
+
     static public void BackToStart(){
         SceneManager.LoadScene((int)Scenes.MainMenu);
     }
@@ -158,17 +176,6 @@ public class DisplayManager : MonoBehaviour
         SceneManager.LoadScene((int)Scenes.Waiting);
     }
 
-    static public void PressButtonAndWait(Button b){
-        if(b==null) return;
-        b.GetComponent<Image>().color = PressedButtonColor;
-        b.interactable=false;
-    }
-
-    static public void UnpressButton(Button b){
-        b.GetComponent<Image>().color = ButtonColor;
-        b.interactable=true;
-    }
-    
     static public void GoToNextScene(Button b=null){
         try{
             PressButtonAndWait(b);
@@ -179,13 +186,6 @@ public class DisplayManager : MonoBehaviour
         }
     }
 
-    static public GameObject InstantiateWithParent(GameObject prefab, GameObject parent){
-        GameObject o = Instantiate(prefab);
-        o.transform.parent = parent.transform;
-        o.transform.localScale = new Vector3(1,1,1);
-        return o;
-    }
-
     static public void LeaveGame(Image background){
         background.color=new Color32(255,255,255,255);
         FindObjectOfType<ConnectionManager>().LeaveRelay(GameManager.Instance.playersIdsList[0]);
@@ -194,12 +194,27 @@ public class DisplayManager : MonoBehaviour
         SceneManager.LoadScene((int)Scenes.MainMenu);
     }
 
-    static public bool RotateCard(GameObject card, Image image, Sprite sprite){
-        foreach(RotatingCard c in currentRotates){
-            if (c.Hash==card.GetHashCode()) return false;
-        }
-        currentRotates.Add(new RotatingCard(card, sprite, image));
-        return true;
+    //------------------------------------------------------------
+    //Helper methods for controlling UI
+    //------------------------------------------------------------
+
+    static public void PressButtonAndWait(Button b){
+        if(b==null) return;
+        b.GetComponent<Image>().color = PressedButtonColor;
+        b.interactable=false;
     }
+
+    static public void UnpressButton(Button b){
+        b.GetComponent<Image>().color = ButtonColor;
+        b.interactable=true;
+    }
+
+    static public GameObject InstantiateWithParent(GameObject prefab, GameObject parent){
+        GameObject o = Instantiate(prefab);
+        o.transform.parent = parent.transform;
+        o.transform.localScale = new Vector3(1,1,1);
+        return o;
+    }
+
 
 }

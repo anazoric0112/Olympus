@@ -7,38 +7,45 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "New Role", menuName = "New Role SO")]
 public class Role : ScriptableObject
 {
+    //-------Fields-------
     [TextArea(2,10)]
     [SerializeField] string description;
     [SerializeField] string roleName;
     [SerializeField] Sprite image;
-    [SerializeField] RoleBehaviour behaviour;
+    RoleBehaviour behaviour;
 
+    //-------Properties-------
     public RoleBehaviour Behaviour {
         get { return behaviour; }
         set { behaviour=value; }
     }
 
-    public Sprite GetImage(){
-        return image;
+    public Sprite Image{
+        get {return image;}
     }
 
-    public string GetDescription(){
-        return description;
+    public string Description{
+        get {return description;}
     }
 
-    public string GetName(){
-        return roleName;
-    }
-    public RolesManager.CardName GetCardName(){
-        return (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),roleName);
+    public string Name{
+        get {return roleName;}
     }
 
+    public RolesManager.CardName CardName{
+        get {return (RolesManager.CardName)Enum.Parse(typeof(RolesManager.CardName),roleName);}
+    }
+
+    //------------------------------------------------------------
+    //For C# Collection purposess
+    //------------------------------------------------------------
+    
     public override bool Equals(object other)
     {
         if (other==null) return false;
 
         var item = other as Role;
-        return item.GetName()==GetName();
+        return item.Name==Name;
     }
 
     public override int GetHashCode()
@@ -46,7 +53,4 @@ public class Role : ScriptableObject
         return roleName.GetHashCode();
     }
 
-    public void SetRoleBehaviour(RoleBehaviour b){
-        behaviour=b;
-    }
 }

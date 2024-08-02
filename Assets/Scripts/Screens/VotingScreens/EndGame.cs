@@ -43,7 +43,7 @@ public class EndGame : MonoBehaviour
 
     void FillMyCard(){
         Role card = GamePlayer.Instance.Role;
-        myCard.sprite = card.GetImage();
+        myCard.sprite = card.Image;
     }
 
     void FillCards(){
@@ -56,7 +56,7 @@ public class EndGame : MonoBehaviour
             
             GameObject cardObject = DisplayManager.InstantiateWithParent(playerCardPrefab, scroll);
             cardObject.GetComponentInChildren<TMP_Text>().text = GameManager.Instance.playerNames[player];
-            cardObject.GetComponentInChildren<Image>().sprite = GameManager.Instance.roleInstances[card].GetImage();
+            cardObject.GetComponentInChildren<Image>().sprite = GameManager.Instance.roleInstances[card].Image;
             cnt++;
         }
         

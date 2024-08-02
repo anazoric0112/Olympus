@@ -31,8 +31,8 @@ public class CassandraBehaviour : RoleBehaviour
         cardsToReveal.Clear();
         
         foreach(Role role in GameManager.Instance.tableCards){
-            Sprite img = role.GetImage();
-            cardsToReveal.Add(new RevealingCard(img, role.GetName(), true));
+            Sprite img = role.Image;
+            cardsToReveal.Add(new RevealingCard(img, role.Name, true));
         }
         for(int i=0;i<10;i++){
             int rng1=UnityEngine.Random.Range(0,cardsToReveal.Count);

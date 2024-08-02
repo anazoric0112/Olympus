@@ -34,11 +34,11 @@ public class CardsScreen : MonoBehaviour
     }
 
     void Start(){
-        AddCardGroup(rolesManager.GetElders(), RolesManager.CardClass.Elder);
-        AddCardGroup(rolesManager.GetPlotters(), RolesManager.CardClass.Plotter);
-        AddCardGroup(rolesManager.GetVindictives(), RolesManager.CardClass.Vindictive);
-        AddCardGroup(rolesManager.GetDeceivers(), RolesManager.CardClass.Deceiver);
-        AddCardGroup(rolesManager.GetCursed(), RolesManager.CardClass.Cursed);
+        AddCardGroup(rolesManager.Elders, RolesManager.CardClass.Elder);
+        AddCardGroup(rolesManager.Plotters, RolesManager.CardClass.Plotter);
+        AddCardGroup(rolesManager.Vindictives, RolesManager.CardClass.Vindictive);
+        AddCardGroup(rolesManager.Deceivers, RolesManager.CardClass.Deceiver);
+        AddCardGroup(rolesManager.Cursed, RolesManager.CardClass.Cursed);
     }
 
     private void AddCardGroup(List<Role> roles, RolesManager.CardClass groupName){
@@ -51,7 +51,7 @@ public class CardsScreen : MonoBehaviour
 
         foreach (Role role in roles){
             GameObject roleCard = DisplayManager.InstantiateWithParent(roleCardPrefab, group);
-            roleCard.GetComponentInChildren<Image>().sprite = role.GetImage();
+            roleCard.GetComponentInChildren<Image>().sprite = role.Image;
 
             Button infoButton = roleCard.GetComponentInChildren<Image>().GetComponentInChildren<Button>();
 
@@ -62,8 +62,8 @@ public class CardsScreen : MonoBehaviour
     }
 
     private void SetDescription(Role role){
-        descText.text=role.GetDescription();
-        descTitle.text=role.GetName();
+        descText.text=role.Description;
+        descTitle.text=role.Name;
         descModal.SetActive(true);
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class AthenaBehaviour : RoleBehaviour
 {
-    private bool firstMove=true;
     private string secondMoveInstructionText = "Below is shown one random player from Tartarus and their exact card:";
 
     public AthenaBehaviour(){
@@ -33,7 +32,7 @@ public class AthenaBehaviour : RoleBehaviour
                 RolesManager.CardName card = GameManager.Instance.playerCards[id];
                 Role role = GameManager.Instance.roleInstances[card];
                 string name = GameManager.Instance.playerNames[id];
-                cardsToReveal.Add(new RevealingCard(role.GetImage(),name));
+                cardsToReveal.Add(new RevealingCard(role.Image,name));
             }
             
             SceneManager.LoadScene((int)DisplayManager.Scenes.CardsPeek);

@@ -59,13 +59,13 @@ public class VotingResult : MonoBehaviour
         string votedName = GameManager.Instance.LastVotedOutName;
         foreach(KeyValuePair<string, RolesManager.CardName> kp in GameManager.Instance.lastPlayersOut){
             if (kp.Key==votedName){
-                votedForCard.sprite=GameManager.Instance.roleInstances[kp.Value].GetImage();
+                votedForCard.sprite=GameManager.Instance.roleInstances[kp.Value].Image;
                 votedForName.text=votedName;
                 return;
             }
         }
         RolesManager.CardName card = GameManager.Instance.playerCards[votedList[0]];
-        votedForCard.sprite=GameManager.Instance.roleInstances[card].GetImage();
+        votedForCard.sprite=GameManager.Instance.roleInstances[card].Image;
         votedForName.text=GameManager.Instance.playerNames[votedList[0]];
 
         if (!ShowCard(card,PlayerIsOut(votedForName.text))) votedForCard.sprite=DisplayManager.QuestionBackNonClickable;
@@ -83,7 +83,7 @@ public class VotingResult : MonoBehaviour
             
             GameObject cardObject = DisplayManager.InstantiateWithParent(playerCardPrefab, scroll);
             cardObject.GetComponentInChildren<TMP_Text>().text = playerName;
-            cardObject.GetComponentInChildren<Image>().sprite = GameManager.Instance.roleInstances[card].GetImage();
+            cardObject.GetComponentInChildren<Image>().sprite = GameManager.Instance.roleInstances[card].Image;
             cnt++;
         }
         

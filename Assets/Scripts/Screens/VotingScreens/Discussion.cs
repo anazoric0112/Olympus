@@ -32,7 +32,7 @@ public class Discussion : MonoBehaviour
         List<Role> allCards = GameManager.Instance.GetAllCardsInGame();
         foreach(Role r in allCards){
             GameObject cardObject = DisplayManager.InstantiateWithParent(cardPrefab, cardScroll);
-            cardObject.GetComponent<Image>().sprite = r.GetImage();
+            cardObject.GetComponent<Image>().sprite = r.Image;
         }
         int rowNumber = allCards.Count/3 + (allCards.Count%3>0 ? 1:0);
         cardScroll.GetComponent< RectTransform >( ).SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, 370*rowNumber);

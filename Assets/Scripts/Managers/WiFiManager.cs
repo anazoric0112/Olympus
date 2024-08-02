@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class WiFiManager : MonoBehaviour
 {
+    //-------Fields-------
     [SerializeField] GameObject wifiErrorModalPrefab;
     List<Selectable> interactables = new List<Selectable>();
     List<Selectable> toEnable = new List<Selectable>();
@@ -15,10 +16,9 @@ public class WiFiManager : MonoBehaviour
     private bool rejoining = false;
     private GameObject modal = null;
 
-    void Start()
-    {
-        
-    }
+    //------------------------------------------------------------
+    //Code for detecting connection
+    //------------------------------------------------------------
 
     async void Update()
     {
@@ -30,13 +30,16 @@ public class WiFiManager : MonoBehaviour
             DisableEnabled();
             modal = InstantiateToCanvas(wifiErrorModalPrefab);
 
-            //ako je host mora da se migrira host
+            // LATER RELEASE
+            //### supposed to disable all game functions if this one disconnects
+            //### additional action required if it is a host
 
         } else if (nowConnected && !wasConnected) {
             rejoining = true;
             
-            await FindObjectOfType<ConnectionManager>().RejoinRelay();
-            Thread.Sleep(2000);
+            // LATER RELEASE
+            //### enable game functions back
+            //### additional action required if it is a host
             EnableBack();
             Destroy(modal);
             modal = null;
@@ -46,17 +49,34 @@ public class WiFiManager : MonoBehaviour
         wasConnected = nowConnected;
     }
 
+    static public bool IsConnected(){
+        // return Application.internetReachability != NetworkReachability.NotReachable;
+        return FindObjectOfType<WiFiManager>().wasConnected;
+    }
+
+    //------------------------------------------------------------
+    //Showing error on screen
+    //------------------------------------------------------------
+
+    private GameObject InstantiateToCanvas(GameObject prefab){
+        GameObject o = Instantiate(prefab);
+        Canvas parent = FindAnyObjectByType<Canvas>();
+        o.transform.parent = parent.transform;
+        o.transform.localScale = new Vector3(1,1,1);
+        o.GetComponent<RectTransform>().anchoredPosition=new Vector2(0, 0);
+        return o;
+    }
+
+    //------------------------------------------------------------
+    //Methods for manipulating interactable graphics
+    //------------------------------------------------------------
+
     public void AddToInteractables(Selectable s){
         interactables.Add(s);
     }
 
     public void ClearInteractables(){
         interactables.Clear();
-    }
-
-    static public bool IsConnected(){
-        // return Application.internetReachability != NetworkReachability.NotReachable;
-        return FindObjectOfType<WiFiManager>().wasConnected;
     }
 
     private void DisableEnabled(){
@@ -68,18 +88,11 @@ public class WiFiManager : MonoBehaviour
         }
     }
 
-    private GameObject InstantiateToCanvas(GameObject prefab){
-        GameObject o = Instantiate(prefab);
-        Canvas parent = FindAnyObjectByType<Canvas>();
-        o.transform.parent = parent.transform;
-        o.transform.localScale = new Vector3(1,1,1);
-        o.GetComponent<RectTransform>().anchoredPosition=new Vector2(0, 0);
-        return o;
-    }
-
     private void EnableBack(){
         foreach(Selectable s in toEnable){
             s.interactable = true;
         }
+        toEnable.Clear();
     }
+
 }

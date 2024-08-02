@@ -33,7 +33,7 @@ public class NyxBehaviour : RoleBehaviour
             if (ido!="" && idt!=""){
                 //take image from tartarus and name from olympus
                 RolesManager.CardName card = GameManager.Instance.playerCards[idt];
-                Sprite img = GameManager.Instance.roleInstances[card].GetImage();
+                Sprite img = GameManager.Instance.roleInstances[card].Image;
                 string name = GameManager.Instance.playerNames[ido];
                 
                 cardsToReveal.Add(new RevealingCard(img,name));

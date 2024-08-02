@@ -8,27 +8,29 @@ using UnityEngine.UI;
 
 public class TimerManager : MonoBehaviour
 {
+    //-------Sprites-------
     [SerializeField] Image timerTop;
     [SerializeField] Image timerBottom;
+
+    //-------Moves and votes timer-------
     private float moveTime = 20;
     private float roleDisplayTime = 30;
     private float discussionTime = 60*5;
     private float votingTime = 30;
     private float resultTime = 60;
-    private float current = 0;
-    private float currentMax = 0;
-    private bool running = false;
-    private float savedTime = -1;
 
-
-    //initial button-unclickable time for moves
+    //-------Initial waiting timer-------
     private bool initialOver = true;
     private float initialTimer = -1;
     private string buttonText = "";
     private Button button;
 
+    //-------Fields-------
+    private float current = 0;
+    private float currentMax = 0;
+    private bool running = false;
+    private float savedTime = -1;
 
-    
     static TimerManager instance;
     static public TimerManager Instance {
         get { return instance; }
@@ -50,6 +52,10 @@ public class TimerManager : MonoBehaviour
         UpdateTimer();
     }
 
+    //------------------------------------------------------------
+    //Manipulating timer for moves, votes and voting result
+    //------------------------------------------------------------
+
     private void UpdateTimer(){
         current -= Time.deltaTime;
         if (current<0f){
@@ -64,30 +70,62 @@ public class TimerManager : MonoBehaviour
     }
 
     public void StartMove(){
-        current = currentMax = moveTime;
-        running=true;
+        StartTimer(moveTime);
     }
 
     public void StartRoleDisplay(){
-        current = currentMax = roleDisplayTime;
-        running=true;
+        StartTimer(roleDisplayTime);
     }
 
     public void StartDiscussion(){
-        current = currentMax = discussionTime;
-        running=true;
+        StartTimer(discussionTime);
     }
     
     public void StartVote(){
-        current = currentMax = votingTime;
-        running=true;
+        StartTimer(votingTime);
     }
 
     public void StartResultScreen(){
-        current = currentMax = resultTime;
-        running=true;
+        StartTimer(resultTime);
     }
 
+    //------------------------------------------------------------
+    //Manipulating timer for initial waiting time on screens
+    //------------------------------------------------------------
+
+    public void StartInitialTimer(string text, float time, Button btn){
+        buttonText=text;
+        button=btn;
+        initialTimer = time;
+        initialOver = false;
+        button.interactable=false;
+        SetButtonText(initialTimer.ToString());
+    }
+    private void UpdateInitialTimer(){
+        initialTimer-=Time.deltaTime;
+        
+        if ((int)initialTimer>=0 && !initialOver){
+            SetButtonText(((int)initialTimer).ToString());
+        } else if (!initialOver){
+            button.interactable=true;
+            SetButtonText(buttonText);
+            initialOver=true;
+        }
+    }
+    
+    //------------------------------------------------------------
+    //Helper functions
+    //------------------------------------------------------------
+
+    private void StartTimer(float t){
+        current = currentMax = t;
+        running=true;
+    }
+        
+    private void SetButtonText(string t){
+        button.GetComponentInChildren<TMP_Text>().text=t;
+    }
+    
     public float GetFill(){
         if (current<0) return 0;
         return current/currentMax;
@@ -114,27 +152,4 @@ public class TimerManager : MonoBehaviour
         return currentRound%60;
     }
 
-    //-----------------Initial timer functions------------------
-    public void StartInitialTimer(string text, float time, Button btn){
-        buttonText=text;
-        button=btn;
-        initialTimer = time;
-        initialOver = false;
-        button.interactable=false;
-        SetButtonText(initialTimer.ToString());
-    }
-    private void UpdateInitialTimer(){
-        initialTimer-=Time.deltaTime;
-        
-        if ((int)initialTimer>=0 && !initialOver){
-            SetButtonText(((int)initialTimer).ToString());
-        } else if (!initialOver){
-            button.interactable=true;
-            SetButtonText(buttonText);
-            initialOver=true;
-        }
-    }
-    private void SetButtonText(string t){
-        button.GetComponentInChildren<TMP_Text>().text=t;
-    }
 }

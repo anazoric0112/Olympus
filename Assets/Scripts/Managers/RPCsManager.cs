@@ -20,7 +20,11 @@ public class RPCsManager : NetworkBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-    
+        
+    //------------------------------------------------------------
+    //Server RPCs
+    //------------------------------------------------------------
+
     [ServerRpc(RequireOwnership = false)]
     public void SwapPlayersServerRpc(string p1, string p2){
         SwapPlayersClientRpc(p1,p2);
@@ -65,6 +69,10 @@ public class RPCsManager : NetworkBehaviour
     public void SwapVotingMovesServerRpc(){
         SwapVotingMovesClientRpc();
     }
+        
+    //------------------------------------------------------------
+    //Client RPCs
+    //------------------------------------------------------------
 
     [ClientRpc(RequireOwnership = false)]
     private void SwapPlayersClientRpc(string p1, string p2){
@@ -75,7 +83,6 @@ public class RPCsManager : NetworkBehaviour
     private void SwapPlayersFallbackClientRpc(string p1, string p2){
         GameManager.Instance.PlayersSwapWithFallback(p1,p2);
     }
-
 
     [ClientRpc(RequireOwnership = false)]
     private void TableSwapPlayersClientRpc(string p1, string p2, string c){
@@ -106,6 +113,7 @@ public class RPCsManager : NetworkBehaviour
     private void PhoenixRoleChangeClientRpc(string p, string c){
         GameManager.Instance.PhoenixCardChange(p,c);
     }
+    
     [ClientRpc(RequireOwnership = false)]
     private void SwapVotingMovesClientRpc(){
         GameManager.Instance.SwapVotingMoves();

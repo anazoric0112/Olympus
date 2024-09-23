@@ -188,9 +188,10 @@ public class DisplayManager : MonoBehaviour
 
     static public void LeaveGame(Image background){
         background.color=new Color32(255,255,255,255);
-        FindObjectOfType<ConnectionManager>().LeaveRelay(GameManager.Instance.playersIdsList[0]);
         
-        GameManager.Instance.ResetGame();
+        GameManager gm = GameManager.Instance;
+        FindObjectOfType<ConnectionManager>().LeaveRelay(gm.playersIdsList[0], gm.playersIdsList.Count);
+
         SceneManager.LoadScene((int)Scenes.MainMenu);
     }
 

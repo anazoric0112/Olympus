@@ -44,7 +44,7 @@ public class SelectRoles : MonoBehaviour
             DisplayManager.PressButtonAndWait(startGame);
 
             try{
-                CheckSelection(selectedRoles);
+                CheckSelection(selectedRoles); //### uncomment after testing
                 List<Role> assigned=RandomShuffle(selectedRoles);
 
                 await connectionManager.StartGame(assigned);

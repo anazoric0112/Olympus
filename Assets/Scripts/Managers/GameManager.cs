@@ -102,7 +102,10 @@ public class GameManager : MonoBehaviour
     }
 
     void Start(){
-        if (roleInstances.Count==0) InstantiateRoleBehaviours();
+        if (roleInstances.Count==0) {
+            RestoreVotingMoves();
+            InstantiateRoleBehaviours();
+        }
     }
     
     

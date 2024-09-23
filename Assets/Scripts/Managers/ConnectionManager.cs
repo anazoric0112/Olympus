@@ -16,6 +16,7 @@ using TMPro;
 using System;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
+using System.Threading;
 
 public class ConnectionManager : NetworkBehaviour
 {
@@ -33,7 +34,6 @@ public class ConnectionManager : NetworkBehaviour
     private const string key_table_cards = "#TableCards";
     private const string key_assigned_cards = "#AssignedCards";
     private const string key_relay_host = "#RelayHost";
-    private const string key_old_host = "#OldHost";
     private const string key_player_cnt = "#PlayersCnt";
 
     //-------Lobby properties-------
@@ -45,7 +45,6 @@ public class ConnectionManager : NetworkBehaviour
 
     //-------fields-------
     static ConnectionManager instance;
-    private GameManager gameManager=null;
     private Lobby lobby=null;
     private bool signedIn=false;
     private Player player;
@@ -55,6 +54,9 @@ public class ConnectionManager : NetworkBehaviour
     private bool migrationOnGoing = false;
     private string relayHost = "";
     private bool pauseReload = false;
+    private int playersToJoin = 0;
+    private int playersJoined = 0;
+    private bool imInLastOut = false;
 
     //-------properties-------
     public bool MigrationOngoing{
@@ -75,11 +77,8 @@ public class ConnectionManager : NetworkBehaviour
 
     //-------Unity methods-------
     void Awake()
-    {
-        gameManager = FindObjectOfType<GameManager>();
-        
+    {   
         if (instance){
-            instance.gameManager = FindObjectOfType<GameManager>();
             gameObject.SetActive(false);
             Destroy(gameObject);
         } else {
@@ -141,12 +140,12 @@ public class ConnectionManager : NetworkBehaviour
 
                     if (relayHost!=GamePlayer.Instance.Id){
                         await JoinRelay(gameCode);
+                        StartCoroutine(ReportJoinedToRelay());
                         Debug.Log("3 Joined new relay");
                     }
                     current = PreGamePhase.Lobby.ToString();
                     lobby = null;
                     reloadMaxTime = 1;
-                    migrationOnGoing=false;
                     Debug.Log("23 migration done");
                     return;
                 } 
@@ -160,11 +159,13 @@ public class ConnectionManager : NetworkBehaviour
 
                     if (!IsLobbyHost) await JoinRelay(gameCode);
 
-                    gameManager.FillPlayers(lobby.Players);
-                    gameManager.FillPlayerRoles(lobby.Data[key_assigned_cards].Value);
-                    gameManager.SetTableCards(lobby.Data[key_table_cards].Value);
+                    GameManager.Instance.ResetGame();
+                    GameManager.Instance.FillPlayers(lobby.Players);
+                    GameManager.Instance.FillPlayerRoles(lobby.Data[key_assigned_cards].Value);
+                    GameManager.Instance.SetTableCards(lobby.Data[key_table_cards].Value);
 
                     lobby = null;
+                    imInLastOut = false;
                     DisplayManager.ToGameStart();
                 }
                 
@@ -294,14 +295,14 @@ public class ConnectionManager : NetworkBehaviour
         asyncOngoing=false;
     }
 
-    public async void LeaveRelay(string newHost=""){
+    public async void LeaveRelay(string newHost, int playersLeft){
         string myId = GamePlayer.Instance.Id;
         
         GameManager gm = GameManager.Instance;
         int resultIndexes = gm.forCursedVoteResultMI | gm.forEldersVoteResultMI;
 
         if (myId == relayHost && (gm.MoveIndex & resultIndexes)!=0){
-            CreateRejoinLobbyClientRpc(newHost, myId);
+            CreateRejoinLobbyClientRpc(newHost, playersLeft);
         } else {
             NetworkManager.Singleton.Shutdown();
         }
@@ -382,14 +383,21 @@ public class ConnectionManager : NetworkBehaviour
     //------------------------------------------------------------
 
     [ClientRpc(RequireOwnership = false)]
-    private void CreateRejoinLobbyClientRpc(string newhost, string oldhost){
-        migrationOnGoing = true;
+    private void CreateRejoinLobbyClientRpc(string newhost, int playersLeft){
+        imInLastOut = GameManager.Instance.playersOut.Contains(GamePlayer.Instance.Id);
+        if (!imInLastOut) migrationOnGoing = true;
+
         if (GamePlayer.Instance.Id!=newhost) return;
-        CreateRejoinLobby(newhost,oldhost);
+        
+        playersToJoin = playersLeft;
+        playersJoined = 0;
+        Debug.Log("2 Players to join: "+playersToJoin);
+        CreateRejoinLobby();
     }
 
-    private async Task CreateRejoinLobby(string newHost, string oldHost){
+    private async Task CreateRejoinLobby(){
         pauseReload=true;
+        string myId = GamePlayer.Instance.Id;
         try{
             int cnt = GameManager.Instance.playersIdsList.Count;
             lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, lobbyMaxN, new CreateLobbyOptions{
@@ -401,13 +409,12 @@ public class ConnectionManager : NetworkBehaviour
                 },
                 Data = new Dictionary<string, DataObject>{
                     {pre_game_phase, new DataObject(DataObject.VisibilityOptions.Member, PreGamePhase.Lobby.ToString())},
-                    {key_old_host,new DataObject(DataObject.VisibilityOptions.Member, oldHost) },
-                    {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, newHost) },
+                    {key_relay_host,new DataObject(DataObject.VisibilityOptions.Member, myId) },
                     {key_player_cnt,new DataObject(DataObject.VisibilityOptions.Member, cnt.ToString()) }
                 }
             });
             Debug.Log("2 New lobby made");
-            RejoinGameServerRpc(lobby.LobbyCode,oldHost,newHost);
+            RejoinGameServerRpc(lobby.LobbyCode,myId);
         } catch (LobbyServiceException e){
             Debug.Log("Error: ConnectionManager.CreateRejoinLobby(): "+e);
         }
@@ -415,40 +422,38 @@ public class ConnectionManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void RejoinGameServerRpc(string code, string oldHost, string newHost){
-        RejoinGameClientRpc(code, oldHost, newHost);
+    private void RejoinGameServerRpc(string code, string newHost){
+        RejoinGameClientRpc(code, newHost);
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void RejoinGameClientRpc(string code, string oldHost, string newHost){
-        RejoinGame(code, oldHost, newHost);
+    private void RejoinGameClientRpc(string code, string newHost){
+        RejoinGame(code, newHost);
     }
 
-    private async Task RejoinGame(string lobbyCode, string oldHost, string newHost){
-        string myId = GamePlayer.Instance.Id;
+    private async Task RejoinGame(string lobbyCode, string newHost){
         NetworkManager.Singleton.Shutdown();
         Debug.Log("1 left connection");
+        if (imInLastOut) return;
 
-        if (myId!=oldHost && myId!=newHost) {
+        string myId = GamePlayer.Instance.Id;
+        if (myId!=newHost) {    // for clients
             reloadMaxTime = 2;
             reloadTimer = 2;
             await JoinLobbyByCode(GamePlayer.Instance.Name, lobbyCode);
             Debug.Log("3 Joined new lobby");
-        }
-
-        if (myId==newHost){
+        } else {                // for host
             gameCode = await CreateRelay();
             Debug.Log("2 Created new relay");
             try{
                 await UpdateRejoinCodeInLobby(gameCode);
                 Debug.Log("2 Updated relay code in lobby");
+                if (playersToJoin==1) migrationOnGoing = false;
             }catch(Exception e){
                 Debug.Log(e);
             }
             pauseReload = false;
         }
-
-        if (myId==oldHost) migrationOnGoing = false;
     }
 
     private async Task UpdateRejoinCodeInLobby(string code){
@@ -467,4 +472,21 @@ public class ConnectionManager : NetworkBehaviour
         }
     }
 
+    [ServerRpc (RequireOwnership = false)]
+    private void ReportJoinedToRelayServerRpc(){
+        playersJoined ++;
+        Debug.Log(playersJoined+"/"+(playersToJoin-1));
+        if(playersJoined==playersToJoin-1) EndMigrationClientRpc();
+    }
+
+    [ClientRpc (RequireOwnership = false)]
+    private void EndMigrationClientRpc(){
+        migrationOnGoing = false;
+        Debug.Log("Migration ended");
+    } 
+
+    private IEnumerator ReportJoinedToRelay(){
+        yield return new WaitForSeconds(5);
+        ReportJoinedToRelayServerRpc();
+    }
 }

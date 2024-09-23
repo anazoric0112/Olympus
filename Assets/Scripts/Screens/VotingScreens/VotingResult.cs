@@ -33,6 +33,9 @@ public class VotingResult : MonoBehaviour
         if (ThisPlayerIsOut()){
             background.color = DisplayManager.LossColor;
             nextButton.GetComponentInChildren<TMP_Text>().text="Leave game";
+            
+            GameManager gm = GameManager.Instance;
+            FindObjectOfType<ConnectionManager>().LeaveRelay(gm.playersIdsList[0], gm.playersIdsList.Count);
         }
 
         if (GameManager.Instance.forCursedVoteResultMI==GameManager.Instance.MoveIndex) titleVotedFor.text = "Voted out for Cursed:";
@@ -40,7 +43,8 @@ public class VotingResult : MonoBehaviour
         
         nextButton.onClick.AddListener(()=>{
             if (ThisPlayerIsOut()){
-                DisplayManager.LeaveGame(background);
+                background.color=new Color32(255,255,255,255);
+                SceneManager.LoadScene((int)DisplayManager.Scenes.MainMenu);
             } else {
                 DisplayManager.GoToNextScene(nextButton);
             }
@@ -107,20 +111,17 @@ public class VotingResult : MonoBehaviour
     void Update()
     {
         bool migrationOngoing = FindObjectOfType<ConnectionManager>().MigrationOngoing;
-        if (nextButton.interactable && migrationOngoing) nextButton.interactable=false;
-        else if (!nextButton.interactable && !migrationOngoing) StartCoroutine(EnableNext());
+        nextButton.interactable = !migrationOngoing;
+        nextButton.GetComponentInChildren<TMP_Text>().text = migrationOngoing ? "Wait a moment..." : 
+                                                            (ThisPlayerIsOut()? "Leave game" : "Next");
 
         if (TimerManager.Instance.IsRunOut() && !runOut && WiFiManager.IsConnected() 
-            && nextButton.interactable){
+            && !migrationOngoing){
             runOut=true;
             DisplayManager.GoToNextScene();
         }
     }
 
-    private IEnumerator EnableNext(){
-        yield return new WaitForSeconds(3f);
-        nextButton.interactable=true;
-    }
 
     private bool ShowCard(RolesManager.CardName card, bool isOut){
         RolesManager.Team myTeam = GamePlayer.Instance.Role.Behaviour.Team;
